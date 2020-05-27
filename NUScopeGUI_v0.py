@@ -17,7 +17,7 @@ from matplotlib.figure import Figure
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 import matplotlib.pyplot as plt
-from SEMImageLoadLibraries_v0 import *
+from ImageLoadLibraries_v0 import *
 matplotlib.use('Qt5Agg')
 
 progname = os.path.basename(sys.argv[0])
