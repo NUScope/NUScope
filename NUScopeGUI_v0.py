@@ -167,6 +167,8 @@ class Window(QMainWindow):
             self.imdata,self.metadata = GenericImageOpenTIFF(self.fname)
         elif "Bruker" in self.filterChoice:
             self.imdata,self.metadata = BrukerAFMImageLoad(self.fname)
+        elif "Gatan" in self.filterChoice:
+            self.imdata = BrukerAFMImageLoad(self.fname)
         
         global tempHF
         nhdfkeys = len(tempHF.keys())
