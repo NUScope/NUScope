@@ -19,8 +19,8 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 import matplotlib.pyplot as plt
 from ImageLoadLibraries_v0 import *
-from ImageFilteringLibraries_v0 import *
-matplotlib.use('Qt5Agg')
+# from ImageFilteringLibraries_v0 import *
+# matplotlib.use('Qt5Agg')
 progname = os.path.basename(sys.argv[0])
 progversion = "0.1"   
 mpl.rc('image',cmap='gray') 
@@ -150,7 +150,7 @@ class Window(QMainWindow):
     def clickedFilewMetaDataLoad(self):
         self.dlg = QFileDialog()
         #filters = "Hitachi SEM Image (*.tif *.tiff);;JEOL SEM Image (*.tif *.tiff);;FEI Quanta SEM Image (*.tif *.tiff)"
-        filters = "Generic Image File (*.tiff *.tif *.png *.jpg *.jpeg);; Hitachi SEM Image (*.tif *.tiff);;JEOL SEM Image (*.tif *.tiff);;FEI Quanta SEM Image (*.tif *.tiff);; Bruker AFM (*.spm)"
+        filters = "Generic Image File (*.tiff *.tif *.png *.jpg *.jpeg);; Hitachi SEM Image (*.tif *.tiff);;JEOL SEM Image (*.tif *.tiff);;FEI Quanta SEM Image (*.tif *.tiff);; Bruker AFM (*.spm);; Gatan (*.dm3 *.dm4)"
         self.fname, self.filterChoice = self.dlg.getOpenFileName(self, "Select an Image file...",filter=filters,options=QFileDialog.DontUseNativeDialog)            
          
         #select correct image loading function based on choice from file menu
