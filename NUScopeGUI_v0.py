@@ -45,15 +45,7 @@ class filteringWindow(QDialog):
         self.sigmaset.setText("3")
         self.filterOptions.layout().addWidget(QLabel("Sigma: "),0)
         self.filterOptions.layout().addWidget(self.sigmaset,1)  
-        self.filterValues = [self.combo.currentText(),int(self.sigmaset.text())]                
-        self.imageFilterChoice = QWidget()
-        self.imageFilterChoice.setLayout(QHBoxLayout())
-        self.image1check = QCheckBox(self)
-        self.image2check = QCheckBox(self)        
-        #self.imageFilterChoice.layout().addWidget(QLabel("Choose Image to Filter: 1 "),0)
-        #self.imageFilterChoice.layout().addWidget(self.image1check,1)
-        #self.imageFilterChoice.layout().addWidget(QLabel("       2 "),2)        
-        #self.imageFilterChoice.layout().addWidget(self.image2check,3)        
+        self.filterValues = [self.combo.currentText(),int(self.sigmaset.text())]                       
         
         self.applysettings = QPushButton('Apply')
         self.applysettings.clicked.connect(self.clicktoapply) 
@@ -64,9 +56,8 @@ class filteringWindow(QDialog):
         self.layout().addWidget(self.combo,0)
         self.layout().addWidget(QLabel("Filter Specific Settings:"),1)
         self.layout().addWidget(self.filterOptions,2)
-        self.layout().addWidget(self.imageFilterChoice,3)
-        self.layout().addWidget(self.applysettings,4)
-        self.layout().addWidget(self.cancel,5)
+        self.layout().addWidget(self.applysettings,3)
+        self.layout().addWidget(self.cancel,4)
     
     def updateSublayout(self):
         for i in reversed(range(self.filterOptions.layout().count())):
