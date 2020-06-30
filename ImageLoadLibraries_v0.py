@@ -132,6 +132,14 @@ def BrukerAFMImageLoad(filename):
         scan_data = scan.get_channel(backward=True)
     return scan_data.pixels, new_meta_data
 
+def dmImageLoad(filename):
+    from ncempy.io import dm
+
+    data = dm.dmReader(filename)
+    image_data = im0['data'] 
+
+    return image_data
+
 def main():
     sharedLocation = "/Users/nathaniel_wk/Documents/NUANCE Files/NuScope/Sample File Formats/"
     
