@@ -16,7 +16,9 @@ import h5py
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
-import matplotlib.pyplot as plt
+from matplotlib_scalebar.scalebar import ScaleBar
+from mpl_toolkits.axes_grid1.anchored_artists import AnchoredSizeBar
+import matplotlib.font_manager as fm
 from scipy.ndimage import gaussian_filter, laplace, sobel, gaussian_laplace
 from ImageLoadLibraries_v0 import *
 mpl.use('Qt5Agg')
@@ -26,7 +28,41 @@ progversion = "0.1"
 #Default plotting settings. Setting globally so all figures/images use these.
 #We probably GUI window to modify these.
 mpl.rc('image',cmap='gray')
-mpl.rc('savefig',transparent=True,dpi=1000)
+mpl.rc('savefig',transparent=True,dpi=1500)
+
+
+class plotSettingsWindow(QDialog):
+    def __init__(self,*args,**kwargs):
+        super(plotSettingsWindow,self).__init__(*args,**kwargs)
+        ScaleSizeList = ["1 mm","1000 um","500 um","100 um","10 um","1 um","100 nm","10 nm","10 A"]
+        self.setLayout(QGridLayout())
+        self.setGeometry(400,400,300,200)
+        self.ScaleBarCombo = QComboBox(self)
+        self.ScaleBarCombo.addItems(ScaleSizeList)
+        self.ScaleBarCombo.setCurrentIndex(ScaleSizeList.index('1 um'))
+        self.ScaleBarCombo.setEditable(True)
+        self.conversionf = QLineEdit(self)
+        self.conversionf.setText("N/A")
+
+                       
+        self.applysettings = QPushButton('Apply')
+        self.applysettings.clicked.connect(self.clicktoapply) 
+        self.cancel = QPushButton('Cancel')
+        self.cancel.clicked.connect(self.cancelClick)
+
+        self.setWindowTitle("Custom Scalebar Settings")
+        self.layout().addWidget(QLabel("Scale Bar Size"),0,0)
+        self.layout().addWidget(self.ScaleBarCombo,0,1)
+        self.layout().addWidget(QLabel("# Pixels\nAcross Scalebar"),1,0)        
+        self.layout().addWidget(self.conversionf,1,1)        
+        self.layout().addWidget(self.applysettings,3,0)
+        self.layout().addWidget(self.cancel,3,1)
+    
+    def clicktoapply(self):
+        self.close()
+        
+    def cancelClick(self):
+        self.close()
 
 
 class filteringWindow(QDialog):
@@ -63,14 +99,12 @@ class filteringWindow(QDialog):
         for i in reversed(range(self.filterOptions.layout().count())):
             self.filterOptions.layout().takeAt(i).widget().setParent(None)
         if self.combo.currentText() == "Gaussian":
-            print(self.combo.currentText())
             self.sigmaset = QLineEdit(self)
             self.sigmaset.setText("3")
             self.filterOptions.layout().addWidget(QLabel("Sigma: "))
             self.filterOptions.layout().addWidget(self.sigmaset)
             self.filterValues = [self.combo.currentText(),int(self.sigmaset.text())]
         elif self.combo.currentText() == "Gaussian-laplace":
-            print(self.combo.currentText())
             self.sigmaset = QLineEdit(self)
             self.sigmaset.setText("3")
             self.filterOptions.layout().addWidget(QLabel("Sigma: "))
@@ -90,8 +124,8 @@ class filteringWindow(QDialog):
         
     def cancelClick(self):
         self.filterValues = ["None"]
-        self.close()
-        
+        self.close()    
+    
 class Window(QMainWindow):
     def __init__(self, *args,**kwargs):
         super(Window, self).__init__(*args,**kwargs)
@@ -186,6 +220,9 @@ class Window(QMainWindow):
         clearfilteract.triggered.connect(clearAllFilters(self))
         fftfilteract = QAction('&FFT',self)
         fftfilteract.triggered.connect(applyFFT(self))
+        
+        plotsettingsact = QAction('&Plot Settings',self)
+        plotsettingsact.triggered.connect(self.OpenPlotSettingsWindow)
         #setup menu bar with basic actions
         menuBar = self.menuBar()
         menuBar.setNativeMenuBar(False)        
@@ -202,6 +239,7 @@ class Window(QMainWindow):
         filtersubMenu.addAction(gaussfilteract)
         filtersubMenu.addAction(clearfilteract)
         toolMenu.addAction(fftfilteract)
+        toolMenu.addAction(plotsettingsact)
         helpMenu = menuBar.addMenu('&Help')
         helpMenu.addAction(abtAct)        
         
@@ -343,9 +381,6 @@ class Window(QMainWindow):
         self.ax2.axis("off")
         self.figwidget.figure.tight_layout()
         self.figwidget.canvas.draw() # refresh canvas        
-
-        #self.figwidget.figure.
-          
         
     def saveHDFFile(self,defaultFileName):
         def saveFile():
@@ -381,7 +416,7 @@ class Window(QMainWindow):
                 self.logwidget.textw.append(f"Applied Gaussian Filter with \u03C3 = {sigmav}\n")                 
             elif filterValues[0] == "Gaussian-laplace":
                 self.fdata = gaussian_laplace(self.imdata,sigmav)
-                self.logwidget.textw.append(f"Applied Gaussian Filter with \u03C3 = {sigmav}\n")             
+                self.logwidget.textw.append(f"Applied Gaussian-Laplace Filter with \u03C3 = {sigmav}\n")             
             elif filterValues[0] == "Laplace":
                 self.fdata = laplace(self.imdata)
                 self.logwidget.textw.append(f"Applied {filterValues[0]} Filter\n") 
@@ -400,7 +435,47 @@ class Window(QMainWindow):
             self.ax.axis("off")
             self.figwidget.figure.tight_layout()
             self.figwidget.canvas.draw() # refresh canvas 
-           
+    
+    def OpenPlotSettingsWindow(self):
+            self.ps = plotSettingsWindow()
+            self.ps.show()
+            self.ps.exec_()
+            try:
+                for axn in self.figwidget.figure.axes:
+                    axn.artists.pop(0)
+            except IndexError:
+                pass
+            barlabel = self.ps.ScaleBarCombo.currentText()
+            barunit = barlabel[-2:]                
+            if barunit == "um":
+                barvalue = float(barlabel[:-2])*1e-6
+                barlabel=barlabel[:-2]+"\u03BCm"
+            elif barunit == "nm":
+                barvalue = float(barlabel[:-2])*1e-9
+            elif barunit == "mm":
+                barvalue = float(barlabel[:-2])*1e-3
+            elif (barunit[-1] == "A") or (barunit[-1] == "a") :
+                barvalue = float(barlabel[:-1])*1e-10
+                barlabel=barlabel[:-1]+"A"                
+            try:
+                if self.ps.conversionf.text() == "N/A":
+                    cf = float(self.simplemdata['Conversion Factor (m/px)'])
+                    barsize = barvalue/cf                    
+                else:
+                    barsize = float(self.ps.conversionf.text())
+                
+                scalebar = AnchoredSizeBar(self.ax.transData,
+                               barsize, barlabel, 'lower left', 
+                               pad=0.25,
+                               color='black',frameon=True,
+                               size_vertical=18,
+                               fontproperties=fm.FontProperties(size=25, family='Arial'))
+    
+                self.ax.add_artist(scalebar)
+                self.figwidget.canvas.draw() # refresh canvas
+            except:
+                self.logwidget.textw.append("Cannot add scalebar. Check metadata for conversion factor.\n") 
+            
 def chooseFileType(self):
         #Test function so multiple files can be opened?
         self.dlg = QFileDialog()
@@ -427,7 +502,7 @@ def chooseFileType(self):
         elif "Bruker" in filterChoice:
             imdata,metadata,simplemdata = BrukerAFMImageLoad(fname)
         elif "Gatan" in filterChoice:
-            imdata,metadata,simplemdata = BrukerAFMImageLoad(fname)
+            imdata,metadata,simplemdata = dmImageLoad(fname)
         self.logwidget.textw.append(f"Opened file: {fname} \n")                      
         self.logwidget.textw.append(f"File Type Selected: {filterChoice} \n")                 
         return fname, filterChoice, imdata, metadata, simplemdata
@@ -458,7 +533,7 @@ def BasicGaussianFilter(self,tempHF,sigma=3):
         self.ax.imshow(fdata)  #plot data
         self.ax.axis("off")
         self.figwidget.figure.tight_layout()
-        #self.figwidget.canvas.draw() # refresh canvas 
+        self.figwidget.canvas.draw() # refresh canvas 
         self.logwidget.textw.append(f"Applied Gaussian Filter with \u03C3 = {sigma}\n")
     return run        
 
@@ -467,7 +542,6 @@ def main():
     mainWindow = Window()
     mainWindow.show()
     sys.exit(app.exec_())
-        
 
 if __name__ == "__main__":
     main()

@@ -1,0 +1,472 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ImageMetadata>
+  <HardwareSetting>
+    <ParameterCollection Id="CameraUnmounted0.AxioCamERc5s">
+      <ApplyCameraProfile Status="Valid">false</ApplyCameraProfile>
+      <ApplyCameraProfile.Type Status="Valid" IsReadOnly="true">BoolType</ApplyCameraProfile.Type>
+      <ApplyCameraProfile.Default Status="Valid" IsReadOnly="true">false</ApplyCameraProfile.Default>
+      <ApplyImageOrientation Status="Valid">true</ApplyImageOrientation>
+      <ApplyImageOrientation.Type Status="Valid" IsReadOnly="true">BoolType</ApplyImageOrientation.Type>
+      <ApplyImageOrientation.Default Status="Valid" IsReadOnly="true">true</ApplyImageOrientation.Default>
+      <CameraBias Status="Valid" IsReadOnly="true">0</CameraBias>
+      <CameraBias.Type Status="Valid" IsReadOnly="true">IntegerType</CameraBias.Type>
+      <CameraOrientation Status="Valid" IsReadOnly="true">0</CameraOrientation>
+      <CameraOrientation.Type Status="Valid" IsReadOnly="true">IntegerType</CameraOrientation.Type>
+      <CameraOrientation.ListItems Status="Valid" IsReadOnly="true">0|Original|Original,1|Flip|Flip Horizontally,2|Reverse|Flip Vertically,4|Rotate|Rotate 90 CW,7|FlipReverseRotate|Rotate 90 CCW,3|FlipReverse|Rotate 180,6|ReverseRotate|Mirror at +45 Diagonal,5|FlipRotate|Mirror at -45 Diagonal</CameraOrientation.ListItems>
+      <CameraOrientation.Default Status="Valid" IsReadOnly="true">0</CameraOrientation.Default>
+      <CameraPixelAccuracy Status="Valid" IsReadOnly="true">0.00390625</CameraPixelAccuracy>
+      <CameraPixelAccuracy.Type Status="Valid" IsReadOnly="true">DoubleType</CameraPixelAccuracy.Type>
+      <CameraPixelDistances Status="Valid" IsReadOnly="true">2.2,2.2</CameraPixelDistances>
+      <CameraPixelDistances.Type Status="Valid" IsReadOnly="true">SizeType</CameraPixelDistances.Type>
+      <CameraPixelMaximum Status="Valid" IsReadOnly="true">255</CameraPixelMaximum>
+      <CameraPixelMaximum.Type Status="Valid" IsReadOnly="true">IntegerType</CameraPixelMaximum.Type>
+      <CameraPixelMinimum Status="Valid" IsReadOnly="true">0</CameraPixelMinimum>
+      <CameraPixelMinimum.Type Status="Valid" IsReadOnly="true">IntegerType</CameraPixelMinimum.Type>
+      <CameraPixelType Status="Valid" IsReadOnly="true">Bgr24</CameraPixelType>
+      <CameraPixelType.Type Status="Valid" IsReadOnly="true">IntegerType</CameraPixelType.Type>
+      <ExposureTime Status="Valid">52.354</ExposureTime>
+      <ExposureTime.Type Status="Valid" IsReadOnly="true">DoubleType</ExposureTime.Type>
+      <ExposureTime.Default Status="Valid" IsReadOnly="true">20</ExposureTime.Default>
+      <ExposureTime.Min Status="Valid" IsReadOnly="true">0.01</ExposureTime.Min>
+      <ExposureTime.Max Status="Valid" IsReadOnly="true">2000</ExposureTime.Max>
+      <ExposureTime.Increment Status="Valid" IsReadOnly="true">0.01</ExposureTime.Increment>
+      <ExposureTime.GuiHint Status="Valid" IsReadOnly="true">GuiLogSlider</ExposureTime.GuiHint>
+      <Frame Status="Valid">0,0,2560,1920</Frame>
+      <Frame.Type Status="Valid" IsReadOnly="true">RectType</Frame.Type>
+      <Frame.Default Status="Valid" IsReadOnly="true">Empty</Frame.Default>
+      <Frame.Max Status="Valid" IsReadOnly="true">0,0,2560,1920</Frame.Max>
+      <ImageByteSize Status="Valid" IsReadOnly="true">14745600</ImageByteSize>
+      <ImageByteSize.Type Status="Valid" IsReadOnly="true">IntegerType</ImageByteSize.Type>
+      <ImageFrame Status="Valid" IsReadOnly="true">0,0,2560,1920</ImageFrame>
+      <ImageFrame.Type Status="Valid" IsReadOnly="true">RectType</ImageFrame.Type>
+      <ImagePixelAccuracy Status="Valid" IsReadOnly="true">0.00390625</ImagePixelAccuracy>
+      <ImagePixelAccuracy.Type Status="Valid" IsReadOnly="true">DoubleType</ImagePixelAccuracy.Type>
+      <ImagePixelDistances Status="Valid" IsReadOnly="true">2.2,2.2</ImagePixelDistances>
+      <ImagePixelDistances.Type Status="Valid" IsReadOnly="true">SizeType</ImagePixelDistances.Type>
+      <ImagePixelType Status="Valid" IsReadOnly="true">Bgr24</ImagePixelType>
+      <ImagePixelType.Type Status="Valid" IsReadOnly="true">IntegerType</ImagePixelType.Type>
+      <LiveFrame Status="Valid" IsReadOnly="true">0,0,2560,1920</LiveFrame>
+      <LiveFrame.Type Status="Valid" IsReadOnly="true">RectType</LiveFrame.Type>
+      <LiveImageByteSize Status="Valid" IsReadOnly="true">1440000</LiveImageByteSize>
+      <LiveImageByteSize.Type Status="Valid" IsReadOnly="true">IntegerType</LiveImageByteSize.Type>
+      <LiveImageFrame Status="Valid" IsReadOnly="true">0,0,800,600</LiveImageFrame>
+      <LiveImageFrame.Type Status="Valid" IsReadOnly="true">RectType</LiveImageFrame.Type>
+      <LiveImagePixelAccuracy Status="Valid" IsReadOnly="true">0.00390625</LiveImagePixelAccuracy>
+      <LiveImagePixelAccuracy.Type Status="Valid" IsReadOnly="true">DoubleType</LiveImagePixelAccuracy.Type>
+      <LiveImagePixelDistances Status="Valid" IsReadOnly="true">7.04,7.04</LiveImagePixelDistances>
+      <LiveImagePixelDistances.Type Status="Valid" IsReadOnly="true">SizeType</LiveImagePixelDistances.Type>
+      <LiveImagePixelType Status="Valid" IsReadOnly="true">Bgr24</LiveImagePixelType>
+      <LiveImagePixelType.Type Status="Valid" IsReadOnly="true">IntegerType</LiveImagePixelType.Type>
+      <LiveValidBits Status="Valid" IsReadOnly="true">8</LiveValidBits>
+      <LiveValidBits.Type Status="Valid" IsReadOnly="true">IntegerType</LiveValidBits.Type>
+      <ValidBits Status="Valid" IsReadOnly="true">8</ValidBits>
+      <ValidBits.Type Status="Valid" IsReadOnly="true">IntegerType</ValidBits.Type>
+      <ValidPixelMaximum Status="Valid" IsReadOnly="true">255</ValidPixelMaximum>
+      <ValidPixelMaximum.Type Status="Valid" IsReadOnly="true">IntegerType</ValidPixelMaximum.Type>
+      <ValidPixelMaximum.Default Status="Valid" IsReadOnly="true">255</ValidPixelMaximum.Default>
+      <StandaloneOrientation Status="Valid">0</StandaloneOrientation>
+      <StandaloneOrientation.Type Status="Valid" IsReadOnly="true">IntegerType</StandaloneOrientation.Type>
+      <StandaloneOrientation.ListItems Status="Valid" IsReadOnly="true">0|Original|Original,1|Flip Horizontally|Flip Horizontally,2|Flip Vertically|Flip Vertically,3|Flip Both (Rotate 180 Degree)|Flip Both (Rotate 180 Degree)</StandaloneOrientation.ListItems>
+      <StandaloneOrientation.Default Status="Valid" IsReadOnly="true">0</StandaloneOrientation.Default>
+      <StandaloneOrientation.Enabled Status="Valid" IsReadOnly="true">true</StandaloneOrientation.Enabled>
+      <StandaloneOrientation.GuiHint Status="Valid" IsReadOnly="true">GuiComboBox</StandaloneOrientation.GuiHint>
+      <StandaloneOrientation.Label Status="Valid" IsReadOnly="true">Orientation</StandaloneOrientation.Label>
+      <StandaloneOrientation.Mode Status="Valid" IsReadOnly="true">Normal</StandaloneOrientation.Mode>
+      <SnapPreviewTime Status="Valid">5</SnapPreviewTime>
+      <SnapPreviewTime.Type Status="Valid" IsReadOnly="true">IntegerType</SnapPreviewTime.Type>
+      <SnapPreviewTime.ListItems Status="Valid" IsReadOnly="true">1|1s|1s,2|2s|2s,5|5s|5s,10|10s|10s</SnapPreviewTime.ListItems>
+      <SnapPreviewTime.Default Status="Valid" IsReadOnly="true">5</SnapPreviewTime.Default>
+      <SnapPreviewTime.Enabled Status="Valid" IsReadOnly="true">true</SnapPreviewTime.Enabled>
+      <SnapPreviewTime.GuiHint Status="Valid" IsReadOnly="true">GuiComboBox</SnapPreviewTime.GuiHint>
+      <SnapPreviewTime.Label Status="Valid" IsReadOnly="true">Snap Preview Time</SnapPreviewTime.Label>
+      <SnapPreviewTime.Mode Status="Valid" IsReadOnly="true">Debug</SnapPreviewTime.Mode>
+      <KappaDateTime Status="Valid" IsReadOnly="true">1/1/0001 12:00:00 AM</KappaDateTime>
+      <KappaDateTime.Type Status="Valid" IsReadOnly="true">StringType</KappaDateTime.Type>
+      <KappaDateTime.Default Status="Valid" IsReadOnly="true">1/1/0001 12:00:00 AM</KappaDateTime.Default>
+      <KappaDateTime.Enabled Status="Valid" IsReadOnly="true">false</KappaDateTime.Enabled>
+      <KappaDateTime.GuiHint Status="Valid" IsReadOnly="true">GuiReadonlyFileName</KappaDateTime.GuiHint>
+      <KappaDateTime.Label Status="Valid" IsReadOnly="true">Time and Date</KappaDateTime.Label>
+      <KappaDateTime.Mode Status="Valid" IsReadOnly="true">Debug</KappaDateTime.Mode>
+      <KappaVideoOutput Status="Valid">128</KappaVideoOutput>
+      <KappaVideoOutput.Type Status="Valid" IsReadOnly="true">IntegerType</KappaVideoOutput.Type>
+      <KappaVideoOutput.ListItems Status="Valid" IsReadOnly="true">96|HDMI VGA|HDMI VGA,128|HDMI SVGA|HDMI SVGA,5|SVideo PAL|SVideo PAL,4|SVideo NTSC|SVideo NTSC</KappaVideoOutput.ListItems>
+      <KappaVideoOutput.Default Status="Valid" IsReadOnly="true">128</KappaVideoOutput.Default>
+      <KappaVideoOutput.Enabled Status="Valid" IsReadOnly="true">true</KappaVideoOutput.Enabled>
+      <KappaVideoOutput.GuiHint Status="Valid" IsReadOnly="true">GuiComboBox</KappaVideoOutput.GuiHint>
+      <KappaVideoOutput.Label Status="Valid" IsReadOnly="true">Video Output and Format</KappaVideoOutput.Label>
+      <KappaVideoOutput.Mode Status="Valid" IsReadOnly="true">Debug</KappaVideoOutput.Mode>
+      <KappaNamingPrefix Status="Valid"></KappaNamingPrefix>
+      <KappaNamingPrefix.Type Status="Valid" IsReadOnly="true">StringType</KappaNamingPrefix.Type>
+      <KappaNamingPrefix.Default Status="Valid" IsReadOnly="true"></KappaNamingPrefix.Default>
+      <KappaNamingPrefix.Enabled Status="Valid" IsReadOnly="true">true</KappaNamingPrefix.Enabled>
+      <KappaNamingPrefix.GuiHint Status="Valid" IsReadOnly="true">GuiTextBox</KappaNamingPrefix.GuiHint>
+      <KappaNamingPrefix.Label Status="Valid" IsReadOnly="true">Kappa Filename Prefix</KappaNamingPrefix.Label>
+      <KappaNamingPrefix.Mode Status="Valid" IsReadOnly="true">Debug</KappaNamingPrefix.Mode>
+      <KappaFileResolution Status="Valid">2</KappaFileResolution>
+      <KappaFileResolution.Type Status="Valid" IsReadOnly="true">IntegerType</KappaFileResolution.Type>
+      <KappaFileResolution.ListItems Status="Valid" IsReadOnly="true">0|640x480|640x480,1|1280x960|1280x960,2|2560x1920|2560x1920</KappaFileResolution.ListItems>
+      <KappaFileResolution.Default Status="Valid" IsReadOnly="true">2</KappaFileResolution.Default>
+      <KappaFileResolution.Enabled Status="Valid" IsReadOnly="true">true</KappaFileResolution.Enabled>
+      <KappaFileResolution.GuiHint Status="Valid" IsReadOnly="true">GuiComboBox</KappaFileResolution.GuiHint>
+      <KappaFileResolution.Label Status="Valid" IsReadOnly="true">Kappa Image File Resolution</KappaFileResolution.Label>
+      <KappaFileResolution.Mode Status="Valid" IsReadOnly="true">Debug</KappaFileResolution.Mode>
+      <KappaImageCompression Status="Valid">10</KappaImageCompression>
+      <KappaImageCompression.Type Status="Valid" IsReadOnly="true">StringType</KappaImageCompression.Type>
+      <KappaImageCompression.Default Status="Valid" IsReadOnly="true">10</KappaImageCompression.Default>
+      <KappaImageCompression.Enabled Status="Valid" IsReadOnly="true">true</KappaImageCompression.Enabled>
+      <KappaImageCompression.GuiHint Status="Valid" IsReadOnly="true">GuiSlider</KappaImageCompression.GuiHint>
+      <KappaImageCompression.Label Status="Valid" IsReadOnly="true">Kappa Image Quality</KappaImageCompression.Label>
+      <KappaImageCompression.Mode Status="Valid" IsReadOnly="true">Debug</KappaImageCompression.Mode>
+      <KappaImageCompression.Min Status="Valid" IsReadOnly="true">2</KappaImageCompression.Min>
+      <KappaImageCompression.Max Status="Valid" IsReadOnly="true">10</KappaImageCompression.Max>
+      <KappaImageCompression.Increment Status="Valid" IsReadOnly="true">1</KappaImageCompression.Increment>
+      <FirmwareVersion Status="Valid" IsReadOnly="true"></FirmwareVersion>
+      <FirmwareVersion.Type Status="Valid" IsReadOnly="true">StringType</FirmwareVersion.Type>
+      <FirmwareVersion.Default Status="Valid" IsReadOnly="true"></FirmwareVersion.Default>
+      <FirmwareVersion.Enabled Status="Valid" IsReadOnly="true">false</FirmwareVersion.Enabled>
+      <FirmwareVersion.GuiHint Status="Valid" IsReadOnly="true">GuiTextBox</FirmwareVersion.GuiHint>
+      <FirmwareVersion.Label Status="Valid" IsReadOnly="true">Kappa Firmware/Software</FirmwareVersion.Label>
+      <FirmwareVersion.Mode Status="Valid" IsReadOnly="true">Debug</FirmwareVersion.Mode>
+      <KappaSharpness Status="Valid">0</KappaSharpness>
+      <KappaSharpness.Type Status="Valid" IsReadOnly="true">DoubleType</KappaSharpness.Type>
+      <KappaSharpness.Default Status="Valid" IsReadOnly="true">0</KappaSharpness.Default>
+      <KappaSharpness.Enabled Status="Valid" IsReadOnly="true">true</KappaSharpness.Enabled>
+      <KappaSharpness.GuiHint Status="Valid" IsReadOnly="true">GuiSlider</KappaSharpness.GuiHint>
+      <KappaSharpness.Label Status="Valid" IsReadOnly="true">Sharpness</KappaSharpness.Label>
+      <KappaColorMatrix Status="Valid">0</KappaColorMatrix>
+      <KappaColorMatrix.Type Status="Valid" IsReadOnly="true">IntegerType</KappaColorMatrix.Type>
+      <KappaColorMatrix.ListItems Status="Valid" IsReadOnly="true">0|None|None,1|BG39|BG39,2|C5000|C5000</KappaColorMatrix.ListItems>
+      <KappaColorMatrix.Default Status="Valid" IsReadOnly="true">0</KappaColorMatrix.Default>
+      <KappaColorMatrix.Enabled Status="Valid" IsReadOnly="true">true</KappaColorMatrix.Enabled>
+      <KappaColorMatrix.GuiHint Status="Valid" IsReadOnly="true">GuiComboBox</KappaColorMatrix.GuiHint>
+      <KappaColorMatrix.Mode Status="Valid" IsReadOnly="true">Debug</KappaColorMatrix.Mode>
+      <KappaColorMatrix.Label Status="Valid" IsReadOnly="true">Color Matrix</KappaColorMatrix.Label>
+      <KappaLiveResolution Status="Valid">2</KappaLiveResolution>
+      <KappaLiveResolution.Type Status="Valid" IsReadOnly="true">IntegerType</KappaLiveResolution.Type>
+      <KappaLiveResolution.ListItems Status="Valid" IsReadOnly="true">1|res_1024_768|res_1024_768,2|res_800_600|res_800_600,3|res_640_480|res_640_480,4|res_320_240|res_320_240</KappaLiveResolution.ListItems>
+      <KappaLiveResolution.Default Status="Valid" IsReadOnly="true">2</KappaLiveResolution.Default>
+      <KappaLiveResolution.Enabled Status="Valid" IsReadOnly="true">true</KappaLiveResolution.Enabled>
+      <KappaLiveResolution.GuiHint Status="Valid" IsReadOnly="true">GuiComboBox</KappaLiveResolution.GuiHint>
+      <KappaLiveResolution.Mode Status="Valid" IsReadOnly="true">Debug</KappaLiveResolution.Mode>
+      <KappaLiveResolution.Label Status="Valid" IsReadOnly="true">Live Resolution</KappaLiveResolution.Label>
+      <ColorSaturation Status="Valid">0</ColorSaturation>
+      <ColorSaturation.Type Status="Valid" IsReadOnly="true">DoubleType</ColorSaturation.Type>
+      <ColorSaturation.Default Status="Valid" IsReadOnly="true">0</ColorSaturation.Default>
+      <ColorSaturation.Min Status="Valid" IsReadOnly="true">-1</ColorSaturation.Min>
+      <ColorSaturation.Max Status="Valid" IsReadOnly="true">1</ColorSaturation.Max>
+      <ColorSaturation.Increment Status="Valid" IsReadOnly="true">0.05</ColorSaturation.Increment>
+      <ColorSaturation.GuiHint Status="Valid" IsReadOnly="true">GuiSlider</ColorSaturation.GuiHint>
+      <ColorSaturation.Enabled Status="Valid" IsReadOnly="true">true</ColorSaturation.Enabled>
+      <CameraDisplayName Status="Valid" IsReadOnly="true">AxioCam ERc5s</CameraDisplayName>
+      <CameraDisplayName.Type Status="Valid" IsReadOnly="true">StringType</CameraDisplayName.Type>
+      <CameraDisplayName.GuiHint Status="Valid" IsReadOnly="true">GuiNone</CameraDisplayName.GuiHint>
+      <CameraDisplayName.Mode Status="Valid" IsReadOnly="true">Expert, NoPersist</CameraDisplayName.Mode>
+      <ImageDeliveryBufferCount Status="Valid">4</ImageDeliveryBufferCount>
+      <ImageDeliveryBufferCount.Type Status="Valid" IsReadOnly="true">IntegerType</ImageDeliveryBufferCount.Type>
+      <ImageDeliveryBufferCount.Default Status="Valid" IsReadOnly="true">4</ImageDeliveryBufferCount.Default>
+      <ImageDeliveryBufferCount.GuiHint Status="Valid" IsReadOnly="true">GuiNone</ImageDeliveryBufferCount.GuiHint>
+      <Adjust Status="Valid">0.8</Adjust>
+      <Adjust.Type Status="Valid" IsReadOnly="true">DoubleType</Adjust.Type>
+      <Adjust.Default Status="Valid" IsReadOnly="true">1</Adjust.Default>
+      <Adjust.Min Status="Valid" IsReadOnly="true">0.05</Adjust.Min>
+      <Adjust.Max Status="Valid" IsReadOnly="true">2</Adjust.Max>
+      <Adjust.Increment Status="Valid" IsReadOnly="true">0.05</Adjust.Increment>
+      <Adjust.GuiHint Status="Valid" IsReadOnly="true">GuiSlider</Adjust.GuiHint>
+      <Adjust.Enabled Status="Valid" IsReadOnly="true">true</Adjust.Enabled>
+      <AdjustFrameRate Status="Valid">false</AdjustFrameRate>
+      <AdjustFrameRate.Type Status="Valid" IsReadOnly="true">BoolType</AdjustFrameRate.Type>
+      <AdjustFrameRate.Default Status="Valid" IsReadOnly="true">false</AdjustFrameRate.Default>
+      <AdjustFrameRate.Label Status="Valid" IsReadOnly="true">Acquire|Adjust Live Frame Rate</AdjustFrameRate.Label>
+      <AdjustFrameRate.GuiHint Status="Valid" IsReadOnly="true">GuiCheckBox</AdjustFrameRate.GuiHint>
+      <AdjustFrameRate.Mode Status="Valid" IsReadOnly="true">Expert</AdjustFrameRate.Mode>
+      <AdjustFrameRate.Enabled Status="Valid" IsReadOnly="true">true</AdjustFrameRate.Enabled>
+      <AdjustFrameRate.DisplayOrder Status="Valid" IsReadOnly="true">200</AdjustFrameRate.DisplayOrder>
+      <AutoExposure Status="Valid">false</AutoExposure>
+      <AutoExposure.Type Status="Valid" IsReadOnly="true">BoolType</AutoExposure.Type>
+      <AutoExposure.Default Status="Valid" IsReadOnly="true">false</AutoExposure.Default>
+      <AutoExposure.GuiHint Status="Valid" IsReadOnly="true">GuiCheckBox</AutoExposure.GuiHint>
+      <AutoExposure.Enabled Status="Valid" IsReadOnly="true">true</AutoExposure.Enabled>
+      <Binning Status="Valid">1,1</Binning>
+      <Binning.Type Status="Valid" IsReadOnly="true">SizeType</Binning.Type>
+      <Binning.Default Status="Valid" IsReadOnly="true">1,1</Binning.Default>
+      <Binning.GuiHint Status="Valid" IsReadOnly="true">GuiNone</Binning.GuiHint>
+      <BinningList Status="Valid">0</BinningList>
+      <BinningList.Type Status="Valid" IsReadOnly="true">IntegerType</BinningList.Type>
+      <BinningList.ListItems Status="Valid" IsReadOnly="true">0|1x1|1x1,1|2x2|2x2,2|4x4|4x4</BinningList.ListItems>
+      <BinningList.Default Status="Valid" IsReadOnly="true">0</BinningList.Default>
+      <BinningList.GuiHint Status="Valid" IsReadOnly="true">GuiComboBox</BinningList.GuiHint>
+      <DualCameraCalibration Status="Valid">false</DualCameraCalibration>
+      <DualCameraCalibration.Type Status="Valid" IsReadOnly="true">BoolType</DualCameraCalibration.Type>
+      <DualCameraCalibration.Default Status="Valid" IsReadOnly="true">false</DualCameraCalibration.Default>
+      <DualCameraCalibration.GuiHint Status="Valid" IsReadOnly="true">GuiCheckBox</DualCameraCalibration.GuiHint>
+      <DualCameraCalibrationId Status="Valid">None</DualCameraCalibrationId>
+      <DualCameraCalibrationId.Type Status="Valid" IsReadOnly="true">StringType</DualCameraCalibrationId.Type>
+      <DualCameraCalibrationId.Default Status="Valid" IsReadOnly="true"></DualCameraCalibrationId.Default>
+      <DualCameraCalibration.Enabled Status="Valid" IsReadOnly="true">false</DualCameraCalibration.Enabled>
+      <ExposureDelay Status="Valid">0</ExposureDelay>
+      <ExposureDelay.Type Status="Valid" IsReadOnly="true">DoubleType</ExposureDelay.Type>
+      <ExposureDelay.Default Status="Valid" IsReadOnly="true">0</ExposureDelay.Default>
+      <ExposureDelay.GuiHint Status="Valid" IsReadOnly="true">GuiNone</ExposureDelay.GuiHint>
+      <ExposureDelay.Max Status="Valid" IsReadOnly="true">1000</ExposureDelay.Max>
+      <FrameRate Status="Valid" IsReadOnly="true">12.7</FrameRate>
+      <FrameRate.Type Status="Valid" IsReadOnly="true">DoubleType</FrameRate.Type>
+      <FrameRate.Default Status="Valid" IsReadOnly="true">0</FrameRate.Default>
+      <FrameRate.Label Status="Valid" IsReadOnly="true">Acquire|Live Frame Rate</FrameRate.Label>
+      <FrameRate.GuiHint Status="Valid" IsReadOnly="true">GuiTextBox</FrameRate.GuiHint>
+      <FrameRate.Mode Status="Valid" IsReadOnly="true">Expert</FrameRate.Mode>
+      <FrameRate.DisplayOrder Status="Valid" IsReadOnly="true">202</FrameRate.DisplayOrder>
+      <FrameRateTarget Status="Valid">30</FrameRateTarget>
+      <FrameRateTarget.Type Status="Valid" IsReadOnly="true">DoubleType</FrameRateTarget.Type>
+      <FrameRateTarget.Default Status="Valid" IsReadOnly="true">30</FrameRateTarget.Default>
+      <FrameRateTarget.Min Status="Valid" IsReadOnly="true">1</FrameRateTarget.Min>
+      <FrameRateTarget.Max Status="Valid" IsReadOnly="true">100</FrameRateTarget.Max>
+      <FrameRateTarget.Increment Status="Valid" IsReadOnly="true">1</FrameRateTarget.Increment>
+      <FrameRateTarget.Label Status="Valid" IsReadOnly="true">Acquire|Live Frame Rate Max</FrameRateTarget.Label>
+      <FrameRateTarget.GuiHint Status="Valid" IsReadOnly="true">GuiSlider</FrameRateTarget.GuiHint>
+      <FrameRateTarget.Mode Status="Valid" IsReadOnly="true">Expert</FrameRateTarget.Mode>
+      <FrameRateTarget.Enabled Status="Valid" IsReadOnly="true">false</FrameRateTarget.Enabled>
+      <FrameRateTarget.DisplayOrder Status="Valid" IsReadOnly="true">201</FrameRateTarget.DisplayOrder>
+      <NoiseFilter Status="Valid">false</NoiseFilter>
+      <NoiseFilter.Type Status="Valid" IsReadOnly="true">BoolType</NoiseFilter.Type>
+      <NoiseFilter.Default Status="Valid" IsReadOnly="true">false</NoiseFilter.Default>
+      <NoiseFilter.GuiHint Status="Valid" IsReadOnly="true">GuiCheckBox</NoiseFilter.GuiHint>
+      <NoiseFilterThreshold Status="Valid">1.5</NoiseFilterThreshold>
+      <NoiseFilterThreshold.Type Status="Valid" IsReadOnly="true">DoubleType</NoiseFilterThreshold.Type>
+      <NoiseFilterThreshold.Default Status="Valid" IsReadOnly="true">1.5</NoiseFilterThreshold.Default>
+      <NoiseFilterThreshold.Min Status="Valid" IsReadOnly="true">0</NoiseFilterThreshold.Min>
+      <NoiseFilterThreshold.Max Status="Valid" IsReadOnly="true">10</NoiseFilterThreshold.Max>
+      <NoiseFilterThreshold.Increment Status="Valid" IsReadOnly="true">0.1</NoiseFilterThreshold.Increment>
+      <NoiseFilterThreshold.GuiHint Status="Valid" IsReadOnly="true">GuiSlider</NoiseFilterThreshold.GuiHint>
+      <NoiseFilter.Enabled Status="Valid" IsReadOnly="true">true</NoiseFilter.Enabled>
+      <NoiseFilterThreshold.Enabled Status="Valid" IsReadOnly="true">true</NoiseFilterThreshold.Enabled>
+      <ReferenceImageCount Status="Valid">3</ReferenceImageCount>
+      <ReferenceImageCount.Type Status="Valid" IsReadOnly="true">IntegerType</ReferenceImageCount.Type>
+      <ReferenceImageCount.Default Status="Valid" IsReadOnly="true">3</ReferenceImageCount.Default>
+      <ReferenceImageCount.GuiHint Status="Valid" IsReadOnly="true">GuiSlider</ReferenceImageCount.GuiHint>
+      <ReferenceImageCount.Label Status="Valid" IsReadOnly="true">Post Processing|Reference Image Count</ReferenceImageCount.Label>
+      <ReferenceImageCount.Enabled Status="Valid" IsReadOnly="true">true</ReferenceImageCount.Enabled>
+      <ReferenceImageCount.Min Status="Valid" IsReadOnly="true">1</ReferenceImageCount.Min>
+      <ReferenceImageCount.Max Status="Valid" IsReadOnly="true">5</ReferenceImageCount.Max>
+      <ReferenceImageCount.Increment Status="Valid" IsReadOnly="true">1</ReferenceImageCount.Increment>
+      <ReferenceImageCount.Mode Status="Valid" IsReadOnly="true">Expert</ReferenceImageCount.Mode>
+      <ShadingReference Status="Valid">false</ShadingReference>
+      <ShadingReference.Type Status="Valid" IsReadOnly="true">BoolType</ShadingReference.Type>
+      <ShadingReference.Default Status="Valid" IsReadOnly="true">false</ShadingReference.Default>
+      <ShadingReference.GuiHint Status="Valid" IsReadOnly="true">GuiCheckBox</ShadingReference.GuiHint>
+      <ShadingReferenceSource Status="Valid">0</ShadingReferenceSource>
+      <ShadingReferenceSource.Type Status="Valid" IsReadOnly="true">IntegerType</ShadingReferenceSource.Type>
+      <ShadingReferenceSource.ListItems Status="Valid" IsReadOnly="true">0|Global|Global,1|Specific|Specific</ShadingReferenceSource.ListItems>
+      <ShadingReferenceSource.Default Status="Valid" IsReadOnly="true">0</ShadingReferenceSource.Default>
+      <ShadingReferenceSource.GuiHint Status="Valid" IsReadOnly="true">GuiComboBox</ShadingReferenceSource.GuiHint>
+      <ShadingReferenceSource.Mode Status="Valid" IsReadOnly="true">Normal</ShadingReferenceSource.Mode>
+      <ShadingReference.Enabled Status="Valid" IsReadOnly="true">true</ShadingReference.Enabled>
+      <ShadingStrength Status="Valid">1</ShadingStrength>
+      <ShadingStrength.Type Status="Valid" IsReadOnly="true">DoubleType</ShadingStrength.Type>
+      <ShadingStrength.Default Status="Valid" IsReadOnly="true">1</ShadingStrength.Default>
+      <ShadingStrength.Min Status="Valid" IsReadOnly="true">0.1</ShadingStrength.Min>
+      <ShadingStrength.Max Status="Valid" IsReadOnly="true">2</ShadingStrength.Max>
+      <ShadingStrength.Increment Status="Valid" IsReadOnly="true">0.01</ShadingStrength.Increment>
+      <ShadingStrength.GuiHint Status="Valid" IsReadOnly="true">GuiSlider</ShadingStrength.GuiHint>
+      <ShadingStrength.Mode Status="Valid" IsReadOnly="true">Expert</ShadingStrength.Mode>
+      <ShadingStrength.Enabled Status="Valid" IsReadOnly="true">true</ShadingStrength.Enabled>
+      <ShadingStrength.Label Status="Valid" IsReadOnly="true">Post Processing|Shading Strength</ShadingStrength.Label>
+      <ShadingUseBias Status="Valid">true</ShadingUseBias>
+      <ShadingUseBias.Type Status="Valid" IsReadOnly="true">BoolType</ShadingUseBias.Type>
+      <ShadingUseBias.Default Status="Valid" IsReadOnly="true">true</ShadingUseBias.Default>
+      <ShadingUseBias.GuiHint Status="Valid" IsReadOnly="true">GuiCheckBox</ShadingUseBias.GuiHint>
+      <ShadingUseBias.Mode Status="Valid" IsReadOnly="true">Expert</ShadingUseBias.Mode>
+      <ShadingUseBias.Enabled Status="Valid" IsReadOnly="true">true</ShadingUseBias.Enabled>
+      <ShadingUseBias.Label Status="Valid" IsReadOnly="true">Post Processing|Shading Use Bias</ShadingUseBias.Label>
+      <Contrast Status="Valid">1</Contrast>
+      <Contrast.Type Status="Valid" IsReadOnly="true">DoubleType</Contrast.Type>
+      <Contrast.Default Status="Valid" IsReadOnly="true">1</Contrast.Default>
+      <Contrast.Min Status="Valid" IsReadOnly="true">0.01</Contrast.Min>
+      <Contrast.Max Status="Valid" IsReadOnly="true">10</Contrast.Max>
+      <Contrast.Increment Status="Valid" IsReadOnly="true">0.01</Contrast.Increment>
+      <Contrast.GuiHint Status="Valid" IsReadOnly="true">GuiSlider</Contrast.GuiHint>
+      <Contrast.Enabled Status="Valid" IsReadOnly="true">true</Contrast.Enabled>
+      <Brightness Status="Valid">0</Brightness>
+      <Brightness.Type Status="Valid" IsReadOnly="true">DoubleType</Brightness.Type>
+      <Brightness.Default Status="Valid" IsReadOnly="true">0</Brightness.Default>
+      <Brightness.Min Status="Valid" IsReadOnly="true">-1</Brightness.Min>
+      <Brightness.Max Status="Valid" IsReadOnly="true">1</Brightness.Max>
+      <Brightness.Increment Status="Valid" IsReadOnly="true">0.01</Brightness.Increment>
+      <Brightness.GuiHint Status="Valid" IsReadOnly="true">GuiSlider</Brightness.GuiHint>
+      <Brightness.Enabled Status="Valid" IsReadOnly="true">true</Brightness.Enabled>
+      <Gamma Status="Valid">1</Gamma>
+      <Gamma.Type Status="Valid" IsReadOnly="true">DoubleType</Gamma.Type>
+      <Gamma.Default Status="Valid" IsReadOnly="true">0.45</Gamma.Default>
+      <Gamma.Min Status="Valid" IsReadOnly="true">0.45</Gamma.Min>
+      <Gamma.Max Status="Valid" IsReadOnly="true">1</Gamma.Max>
+      <Gamma.Increment Status="Valid" IsReadOnly="true">0.55</Gamma.Increment>
+      <Gamma.GuiHint Status="Valid" IsReadOnly="true">GuiSlider</Gamma.GuiHint>
+      <Gamma.Enabled Status="Valid" IsReadOnly="true">true</Gamma.Enabled>
+      <Contrast.Mode Status="Valid" IsReadOnly="true">Debug</Contrast.Mode>
+      <Brightness.Mode Status="Valid" IsReadOnly="true">Debug</Brightness.Mode>
+      <Gamma.Mode Status="Valid" IsReadOnly="true">Debug</Gamma.Mode>
+      <ExposureTime.Enabled Status="Valid" IsReadOnly="true">true</ExposureTime.Enabled>
+      <Resolution Status="Valid">0</Resolution>
+      <Resolution.Type Status="Valid" IsReadOnly="true">IntegerType</Resolution.Type>
+      <Resolution.ListItems Status="Valid" IsReadOnly="true">0|2560x1920|2560x1920</Resolution.ListItems>
+      <Resolution.Default Status="Valid" IsReadOnly="true">0</Resolution.Default>
+      <Resolution.GuiHint Status="Valid" IsReadOnly="true">GuiComboBox</Resolution.GuiHint>
+      <Resolution.Enabled Status="Valid" IsReadOnly="true">false</Resolution.Enabled>
+      <BinningList.Enabled Status="Valid" IsReadOnly="true">true</BinningList.Enabled>
+      <Frame.Enabled Status="Valid" IsReadOnly="true">true</Frame.Enabled>
+      <Frame.ListItems Status="Valid" IsReadOnly="true">0|0&amp;comma;0&amp;comma;2560&amp;comma;1920|100% (2560x1920),1|640&amp;comma;480&amp;comma;1280&amp;comma;960|50% (1280x960),2|960&amp;comma;720&amp;comma;640&amp;comma;480|25% (640x480)</Frame.ListItems>
+      <ColorMode Status="Valid">1</ColorMode>
+      <ColorMode.Type Status="Valid" IsReadOnly="true">IntegerType</ColorMode.Type>
+      <ColorMode.ListItems Status="Valid" IsReadOnly="true">0|0|Monochrome,1|1|Color</ColorMode.ListItems>
+      <ColorMode.Default Status="Valid" IsReadOnly="true">1</ColorMode.Default>
+      <ColorMode.GuiHint Status="Valid" IsReadOnly="true">GuiComboBox</ColorMode.GuiHint>
+      <ColorMode.Enabled Status="Valid" IsReadOnly="true">true</ColorMode.Enabled>
+      <WhiteBalance Status="Valid">1.0252630176321,1.0024282725431,0.33333333333333</WhiteBalance>
+      <WhiteBalance.Type Status="Valid" IsReadOnly="true">StringType</WhiteBalance.Type>
+      <WhiteBalance.Default Status="Valid" IsReadOnly="true">1,1,1</WhiteBalance.Default>
+      <WhiteBalance.GuiHint Status="Valid" IsReadOnly="true">GuiWhiteBalanceValues</WhiteBalance.GuiHint>
+      <WhiteBalanceOffset Status="Valid">0</WhiteBalanceOffset>
+      <WhiteBalanceOffset.Type Status="Valid" IsReadOnly="true">DoubleType</WhiteBalanceOffset.Type>
+      <WhiteBalanceOffset.Default Status="Valid" IsReadOnly="true">0</WhiteBalanceOffset.Default>
+      <WhiteBalanceOffset.Min Status="Valid" IsReadOnly="true">-2</WhiteBalanceOffset.Min>
+      <WhiteBalanceOffset.Max Status="Valid" IsReadOnly="true">2</WhiteBalanceOffset.Max>
+      <WhiteBalanceOffset.Increment Status="Valid" IsReadOnly="true">0.1</WhiteBalanceOffset.Increment>
+      <WhiteBalanceOffset.GuiHint Status="Valid" IsReadOnly="true">GuiSlider</WhiteBalanceOffset.GuiHint>
+      <WhiteBalance.Enabled Status="Valid" IsReadOnly="true">true</WhiteBalance.Enabled>
+      <WhiteBalanceOffset.Enabled Status="Valid" IsReadOnly="true">true</WhiteBalanceOffset.Enabled>
+      <WhiteBalance.ListItems Status="Valid" IsReadOnly="true">0|1.0252630176321&amp;comma;1.0024282725431&amp;comma;0.33333333333333|3200K,1|0.53968253968254&amp;comma;1.0307730882547&amp;comma;0.62966779636785|5500K</WhiteBalance.ListItems>
+      <KappaSharpness.Min Status="Valid" IsReadOnly="true">0</KappaSharpness.Min>
+      <KappaSharpness.Max Status="Valid" IsReadOnly="true">3</KappaSharpness.Max>
+      <KappaSharpness.Increment Status="Valid" IsReadOnly="true">1</KappaSharpness.Increment>
+      <ImageFrame.Max Status="Valid" IsReadOnly="true">0,0,2560,1920</ImageFrame.Max>
+      <LiveImageFrame.Max Status="Valid" IsReadOnly="true">0,0,800,600</LiveImageFrame.Max>
+      <CameraIdentifier Status="Valid" IsReadOnly="true">AxioCamERc5s_SMHG4697</CameraIdentifier>
+      <CameraIdentifier.Type Status="Valid" IsReadOnly="true">StringType</CameraIdentifier.Type>
+      <CameraIdentifier.GuiHint Status="Valid" IsReadOnly="true">GuiTextBox</CameraIdentifier.GuiHint>
+      <CameraIdentifier.DisplayOrder Status="Valid" IsReadOnly="true">-999</CameraIdentifier.DisplayOrder>
+      <CameraIdentifier.Label Status="Valid" IsReadOnly="true">Camera Identifier</CameraIdentifier.Label>
+      <BlackReference.Enabled Status="Valid" IsReadOnly="true">false</BlackReference.Enabled>
+    </ParameterCollection>
+    <Configuration>
+      <Device Id="Microscope" Name="" UniqueName="" Model="" IsAvailable="true" IsBroken="false" IsBrokenReason="" Motorization="None" IsEmitter="false" IsDetector="false">
+        <StandSpecification>
+          <StandCharacteristic Key="Standard"></StandCharacteristic>
+        </StandSpecification>
+        <Devices>
+          <DeviceRef Id="CameraUnmounted0.AxioCamERc5s"></DeviceRef>
+        </Devices>
+        <BeamPaths></BeamPaths>
+      </Device>
+      <Device Id="CameraUnmounted0.AxioCamERc5s" Name="AxioCam ERc5s" UniqueName="AxioCamERc5s_SMHG4697" Model="AxioCamERc5s" IsAvailable="true" IsBroken="false" IsBrokenReason="" Motorization="Motorized" IsEmitter="false" IsDetector="true"></Device>
+    </Configuration>
+  </HardwareSetting>
+  <Information>
+    <User Id="0" />
+    <Application>
+      <Name>ZEN 2 (blue edition)</Name>
+      <Version>2.0.0.0</Version>
+    </Application>
+    <Document>
+      <UserName>EPIC Laboratory</UserName>
+    </Document>
+    <Image>
+      <PixelType>Bgr24</PixelType>
+      <ComponentBitCount>8</ComponentBitCount>
+      <SizeX>2560</SizeX>
+      <SizeY>1920</SizeY>
+      <SizeC>1</SizeC>
+      <Dimensions>
+        <Channels>
+          <Channel Id="Channel:0">
+            <Color>#FFFFFFFF</Color>
+            <AcquisitionMode>WideField</AcquisitionMode>
+            <ExposureTime>52354000</ExposureTime>
+            <IlluminationType>Other</IlluminationType>
+            <ContrastMethod>Unspecified</ContrastMethod>
+            <Reflector>CFP</Reflector>
+            <PixelType>Bgr24</PixelType>
+            <ComponentBitCount>8</ComponentBitCount>
+            <DetectorSettings>
+              <Binning>1,1</Binning>
+              <Detector Id="Detector:AxioCam ERc5s" />
+            </DetectorSettings>
+          </Channel>
+        </Channels>
+        <T>
+          <StartTime>0001-01-01T00:00:00</StartTime>
+        </T>
+      </Dimensions>
+      <ObjectiveSettings>
+        <ObjectiveRef Id="Objective:1" />
+      </ObjectiveSettings>
+      <MicroscopeRef Id="Microscope:1" />
+      <MicroscopeSettings>
+        <EyepieceSettings>
+          <TotalMagnification>5</TotalMagnification>
+        </EyepieceSettings>
+      </MicroscopeSettings>
+      <TubeLenses>
+        <TubeLensRef Id="TubeLens:1" />
+      </TubeLenses>
+    </Image>
+    <Instrument>
+      <Microscopes>
+        <Microscope Id="Microscope:1" Name="Axio Imager" />
+      </Microscopes>
+      <Detectors>
+        <Detector Id="Detector:AxioCam ERc5s" Name="AxioCam ERc5s">
+          <GammaDefault>1</GammaDefault>
+          <Manufacturer>
+            <Model>AxioCamERc5s</Model>
+          </Manufacturer>
+          <Adapter>
+            <Magnification>1</Magnification>
+            <Manufacturer>
+              <Model>1.0x</Model>
+            </Manufacturer>
+          </Adapter>
+        </Detector>
+      </Detectors>
+      <Objectives>
+        <Objective Id="Objective:1" Name="5x">
+          <NominalMagnification>5</NominalMagnification>
+        </Objective>
+      </Objectives>
+      <TubeLenses>
+        <TubeLens Id="TubeLens:1" Name="1.0x">
+          <Magnification>1</Magnification>
+        </TubeLens>
+      </TubeLenses>
+    </Instrument>
+  </Information>
+  <Scaling>
+    <AutoScaling>
+      <Type>Measured</Type>
+      <Objective>10 x</Objective>
+      <OptovarMagnification>1</OptovarMagnification>
+      <CameraName>AxioCam ERc5s</CameraName>
+      <CameraAdapterMagnification>1</CameraAdapterMagnification>
+      <CameraPixelDistance>2.2,2.2</CameraPixelDistance>
+      <CreationDateTime>02/03/2020 23:46:08</CreationDateTime>
+    </AutoScaling>
+    <Items>
+      <Distance Id="X">
+        <Value>4.4271239893964608E-08</Value>
+        <DefaultUnitFormat>µm</DefaultUnitFormat>
+      </Distance>
+      <Distance Id="Y">
+        <Value>4.4271239893964608E-08</Value>
+        <DefaultUnitFormat>µm</DefaultUnitFormat>
+      </Distance>
+    </Items>
+  </Scaling>
+  <DisplaySetting>
+    <Channels>
+      <Channel Id="Channel:0" Name="C1">
+        <BitCountRange>8</BitCountRange>
+        <DyeName>Dye1</DyeName>
+        <ColorMode>None</ColorMode>
+      </Channel>
+    </Channels>
+  </DisplaySetting>
+  <Layers />
+</ImageMetadata>

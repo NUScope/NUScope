@@ -1,0 +1,27 @@
+[SemImageFile]
+Version=1
+InstructName=S-4800
+FileName=C:\DOCUME~1\semuser\LOCALS~1\Temp\^$Pci.PCI
+SampleName=SEM
+DataNumber=S4800
+Format=bmp
+Media=HD[ ]
+DataSize=1280x960
+Date=08/29/2019
+Time=18:02:18
+Magnification=5000
+AcceleratingVoltage=5000 Volt
+EmissionCurrent=9800 nA
+WorkingDistance=8000 um
+SignalName=SE(U)
+SubMagnification=0
+SubSignalName=
+PhotoSize=1000
+Comment=
+Keyword1=
+Keyword2=
+LensMode=Normal
+Vacuum=
+MicronMarker=10000
+DataDisplayCombine=1
+DecelerationVoltage=0 Volt
