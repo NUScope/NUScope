@@ -125,7 +125,41 @@ class filteringWindow(QDialog):
     def cancelClick(self):
         self.filterValues = ["None"]
         self.close()    
+        
+class fftWindow(QDialog):
+    def __init__(self,*args,**kwargs):
+        super(fftWindow,self).__init__(*args,**kwargs)
+        zscalinglist = ['None',"Log","Log10"] #Need to expand
+        self.setLayout(QVBoxLayout())
+        self.setGeometry(550,550,300,200)
+        self.fftzscaling = QComboBox(self)
+        self.fftzscaling.addItems(zscalinglist)
+        self.fftzscaling.setEditable(True)         
+        self.filterOptions = QWidget()
+        self.filterOptions.setLayout(QHBoxLayout()) 
+        self.sigmaset = QLineEdit(self)
+        self.sigmaset.setText("3")
+        self.filterOptions.layout().addWidget(QLabel("Sigma: "),0)
+        self.filterOptions.layout().addWidget(self.sigmaset,1)                       
+        
+        self.applysettings = QPushButton('Apply')
+        self.applysettings.clicked.connect(self.clicktoapply) 
+        self.cancel = QPushButton('Cancel')
+        self.cancel.clicked.connect(self.cancelClick)
+
+        self.setWindowTitle("Image FFT Settings")
+        self.layout().addWidget(self.fftzscaling,0)        
+        self.layout().addWidget(self.applysettings,3)
+        self.layout().addWidget(self.cancel,4)
     
+    def clicktoapply(self):
+        self.fftapplied = "True"
+        self.close()
+        
+    def cancelClick(self):
+        self.fftapplied = "False"
+        self.close()    
+        
 class Window(QMainWindow):
     def __init__(self, *args,**kwargs):
         super(Window, self).__init__(*args,**kwargs)
@@ -155,11 +189,9 @@ class Window(QMainWindow):
         figwidget.setSizePolicy(QtWidgets.QSizePolicy.Expanding,QtWidgets.QSizePolicy.Expanding)
         figwidget.setMinimumSize(700,200)
         figwidget.canvas.updateGeometry()           
-        #self.ax = self.figure.add_subplot(111)
         figwidget.toolbar = NavigationToolbar(figwidget.canvas, figwidget)
         figwidget.layout().addWidget(figwidget.toolbar)
-        figwidget.layout().addWidget(figwidget.canvas)
-        #figwidget.resize(900, 600)        
+        figwidget.layout().addWidget(figwidget.canvas)  
 
         #Create widget for metadata:
         self.metawidget =QWidget()
@@ -219,7 +251,7 @@ class Window(QMainWindow):
         clearfilteract = QAction('&Clear All Filters',self)
         clearfilteract.triggered.connect(clearAllFilters(self))
         fftfilteract = QAction('&FFT',self)
-        fftfilteract.triggered.connect(applyFFT(self))
+        fftfilteract.triggered.connect(self.applyFFT)
         
         plotsettingsact = QAction('&Plot Settings',self)
         plotsettingsact.triggered.connect(self.OpenPlotSettingsWindow)
@@ -294,6 +326,7 @@ class Window(QMainWindow):
         
     def clickedFilewMetaDataLoad(self):
         self.fname,self.filterChoice, self.imdata,self.metadata,self.simplemdata = chooseFileType(self)      
+        self.cur_imdata = self.imdata
         self.metawidget.metaChoice.clear()
         self.metawidget.metaChoice.addItem("Full Metadata")
         self.metawidget.metaChoice.addItem("Simplified Metadata")   
@@ -475,11 +508,42 @@ class Window(QMainWindow):
                 self.figwidget.canvas.draw() # refresh canvas
             except:
                 self.logwidget.textw.append("Cannot add scalebar. Check metadata for conversion factor.\n") 
+    def applyFFT(self):
+            self.fftw = fftWindow()
+            self.fftw.show()
+            self.fftw.exec_()
+            def run():
+                rawfftData = np.fft.fft2(self.imdata)
+                shiftedfftData = np.fft.fftshift(rawfftData)
+                absShiftedfftData = np.abs(shiftedfftData)
+                if self.fftw.fftzscaling.currentText() == "None":
+                    plotfftData= absShiftedfftData
+                elif self.fftw.fftzscaling.currentText() == "Log":                    
+                    plotfftData = np.log(absShiftedfftData)
+                elif self.fftw.fftzscaling.currentText() == "Log10":                    
+                    plotfftData = np.log10(absShiftedfftData)                    
+                self.figwidget.figure.clear() #clear figure
+                self.ax = self.figwidget.figure.add_subplot(121) # create an axis
+                self.ax.imshow(self.imdata)  #plot data
+                self.ax.set_title('Original Image')
+                self.ax.axis("off")
+        
+                self.ax2 = self.figwidget.figure.add_subplot(122)
+                self.ax2.imshow(plotfftData)  #plot data
+                self.ax2.set_title('FFT')
+                self.ax2.axis("off")
+                self.figwidget.figure.tight_layout()
+                self.figwidget.canvas.draw() # refresh canvas 
+            if self.fftw.fftapplied == "True":
+                run()
+            else:
+                pass                
+
             
 def chooseFileType(self):
         #Test function so multiple files can be opened?
         self.dlg = QFileDialog()
-        filefilters = "Generic Image File (*.tiff *.tif *.png *.jpg *.jpeg);; Hitachi SEM Image (*.tif *.tiff);;JEOL SEM Image (*.tif *.tiff);;FEI Quanta SEM Image (*.tif *.tiff);; Bruker AFM (*.spm);; Gatan (*.dm3 *.dm4)"
+        filefilters = "Generic Image File (*.tiff *.tif *.png *.jpg *.jpeg);; Hitachi SEM Image (*.tif *.tiff);;JEOL SEM Image (*.tif *.tiff);;FEI Quanta SEM Image (*.tif *.tiff);; Bruker AFM (*.spm);; Gatan (*.dm3 *.dm4);; Thermofischer (*.ser)"
         fname, filterChoice = self.dlg.getOpenFileName(self, "Select an Image file...",filter=filefilters,options=QFileDialog.DontUseNativeDialog)            
         #select correct image loading function based on choice from file menu
         try: del imdata
@@ -503,16 +567,12 @@ def chooseFileType(self):
             imdata,metadata,simplemdata = BrukerAFMImageLoad(fname)
         elif "Gatan" in filterChoice:
             imdata,metadata,simplemdata = dmImageLoad(fname)
+        elif "Thermofischer" in filterChoice:
+            imdata,metadata,simplemdata = SERImageLoad(fname)            
         self.logwidget.textw.append(f"Opened file: {fname} \n")                      
         self.logwidget.textw.append(f"File Type Selected: {filterChoice} \n")                 
         return fname, filterChoice, imdata, metadata, simplemdata
-
-def applyFFT(self):
-    def run():
-        pass
-        #add fft function details here
-        #image data should be loaded as self.imdata
-    return run
+      
     
 def clearAllFilters(self):
     def run():

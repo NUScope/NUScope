@@ -166,18 +166,23 @@ def JEOL7900SEMImageLoad(filename,meta_filename):
 def BrukerAFMImageLoad(filename):
     import pySPM
     scan = pySPM.Bruker(filename)
-    meta_data = scan.layers[0]
+    mdata = scan.layers[0]
     simple_meta_data = {}    
-    new_meta_data ={}
-    for item in meta_data.items():
+    meta_data ={}
+    for item in mdata.items():
+        print(item)
         tempValue = item[1][0].decode('UTF-8')
-        #print(tempValue)
-        new_meta_data[item[0].decode('UTF-8')]=tempValue   
+        print(tempValue)
+        meta_data[item[0].decode('UTF-8')]=tempValue   
     try:
         scan_data = scan.get_channel()
     except:
         scan_data = scan.get_channel(backward=True)
-    return scan_data.pixels, new_meta_data, simple_meta_data
+    
+    simple_meta_data['Image Type'] = meta_data['Data type']
+    #simple_meta_data['Conversion Factor (m/px)'] = meta_data['Scan Size']
+        
+    return scan_data.pixels, meta_data, simple_meta_data
 
 def dmImageLoad(filename):
     '''
@@ -201,6 +206,25 @@ def dmImageLoad(filename):
         image_data = image_data[0,:,:]
     return image_data, meta_data, simple_meta_data
 
+def SERImageLoad(filename):
+    '''
+    ????
+    '''
+    from ncempy.io import ser
+    
+    data = ser.serReader(filename)
+    
+    image_data = data['data']
+    meta_data = {} 
+    data.pop('data')
+    pxSize = data['pixelSize'][1] 
+    for k,v in data.items():
+        meta_data[k] = str(v)
+    simple_meta_data = meta_data
+    simple_meta_data['Conversion Factor (m/px)'] =str(float(pxSize))        
+    if len(image_data.shape) > 2: #if dataset is 3D, return 1st image
+        image_data = image_data[0,:,:]
+    return image_data, meta_data, simple_meta_data
 
 def main():
     '''
@@ -224,6 +248,7 @@ def main():
     j7900_idata,j7900_mdata,j7900_simple_mdata = JEOL7900SEMImageLoad(j7900_fn, j7900_mfn)
     bruker_idata,bruker_mdata,bruker_simple_mdata = BrukerAFMImageLoad(bruker_fn)
     dm3_idata,dm3_mdata,dm3_simple_mdata = dmImageLoad(gatan_fn)
+    print(bruker_mdata)
     
     '''
     fig, ax = plt.subplots(1,5, figsize=(14,3))
