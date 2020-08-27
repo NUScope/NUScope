@@ -57,7 +57,7 @@ def HitachiSEMImageLoad(filename,meta_filename):
     simple_meta_data['Working Distance'] = meta_data['WorkingDistance']
     simple_meta_data['Emission Current'] = meta_data['EmissionCurrent']
     simple_meta_data['Image Size (px)'] = meta_data['DataSize']
-    simple_meta_data['Conversion Factor (m/px)'] = str(float(meta_data['PixelSize'])*1e-9)
+    simple_meta_data['Conversion Factor (m per px)'] = str(float(meta_data['PixelSize'])*1e-9)
     image_data = io.imread(filename)
     image_data = skimage.img_as_float(image_data)
     return image_data,meta_data,simple_meta_data
@@ -101,7 +101,7 @@ def QuantaSEMImageLoad(filename,meta_filename):
     simple_meta_data['Working Distance'] = meta_data['WorkingDistance']
     simple_meta_data['Emission Current'] = meta_data['EmissionCurrent']
     simple_meta_data['Image Size (px)'] = meta_data['ResolutionX']+'x'+meta_data['ResolutionY']
-    simple_meta_data['Conversion Factor (m/px)'] = meta_data['PixelWidth'] 
+    simple_meta_data['Conversion Factor (m per px)'] = meta_data['PixelWidth'] 
     image_data = io.imread(filename)
     image_data = skimage.img_as_float(image_data)
     return image_data,meta_data,simple_meta_data
@@ -141,10 +141,10 @@ def JEOL7900SEMImageLoad(filename,meta_filename):
     if meta_data['SM_MICRON_MARKER'][-2:] == 'um':
         um2mConversionFactor = 1e-6
         cf = um2mConversionFactor
-    elif meta_data['SM_MICRON_MARKER'] == 'nm':
+    elif meta_data['SM_MICRON_MARKER'][-2:] == 'nm':
         nm2mConversionFactor = 1e-9
         cf = um2mConversionFactor        
-    elif meta_data['SM_MICRON_MARKER'] == 'mm':
+    elif meta_data['SM_MICRON_MARKER'][-2:] == 'mm':
         mm2mConversionFactor = 1e-3
         cf = um2mConversionFactor        
     simple_meta_data['Instrument']=meta_data['CM_INSTRUMENT']
@@ -156,7 +156,7 @@ def JEOL7900SEMImageLoad(filename,meta_filename):
     simple_meta_data['Working Distance'] = meta_data['SM_WD']
     simple_meta_data['Emission Current'] = meta_data['SM_EMI_CURRENT']
     simple_meta_data['Image Size (px)'] = meta_data['CM_FULL_SIZE']
-    simple_meta_data['Conversion Factor (m/px)'] = str(cf*float(meta_data['SM_MICRON_MARKER'][:-2])/float(meta_data['SM_MICRON_BAR']))
+    simple_meta_data['Conversion Factor (m per px)'] = str(cf*float(meta_data['SM_MICRON_MARKER'][:-2])/float(meta_data['SM_MICRON_BAR']))
     
     image_data = io.imread(filename)
     image_data = skimage.img_as_float(image_data)
@@ -180,7 +180,7 @@ def BrukerAFMImageLoad(filename):
         scan_data = scan.get_channel(backward=True)
     
     simple_meta_data['Image Type'] = meta_data['Data type']
-    #simple_meta_data['Conversion Factor (m/px)'] = meta_data['Scan Size']
+    #simple_meta_data['Conversion Factor (m per px)'] = meta_data['Scan Size']
         
     return scan_data.pixels, meta_data, simple_meta_data
 
@@ -201,7 +201,7 @@ def dmImageLoad(filename):
     for k,v in data.items():
         meta_data[k] = str(v)
     simple_meta_data = meta_data
-    simple_meta_data['Conversion Factor (m/px)'] =str(float(pxSize)*1e-9)        
+    simple_meta_data['Conversion Factor (m per px)'] =str(float(pxSize)*1e-9)        
     if len(image_data.shape) > 2: #if dataset is 3D, return 1st image
         image_data = image_data[0,:,:]
     return image_data, meta_data, simple_meta_data
@@ -221,7 +221,7 @@ def SERImageLoad(filename):
     for k,v in data.items():
         meta_data[k] = str(v)
     simple_meta_data = meta_data
-    simple_meta_data['Conversion Factor (m/px)'] =str(float(pxSize))        
+    simple_meta_data['Conversion Factor (m per px)'] =str(float(pxSize))        
     if len(image_data.shape) > 2: #if dataset is 3D, return 1st image
         image_data = image_data[0,:,:]
     return image_data, meta_data, simple_meta_data
