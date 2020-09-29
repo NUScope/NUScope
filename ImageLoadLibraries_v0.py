@@ -184,7 +184,7 @@ def BrukerAFMImageLoad(filename):
         
     return scan_data.pixels, meta_data, simple_meta_data
 
-def dmImageLoad(filename):
+def dmImageLoad_PreVideo(filename):
     '''
     This should work for any Digital Micrograph file (dm3,dm4) that is an image.
     3D Datasets will only show 1st image in series (time series, etc).
@@ -206,6 +206,27 @@ def dmImageLoad(filename):
         image_data = image_data[0,:,:]
     return image_data, meta_data, simple_meta_data
 
+def dmImageLoad(filename):
+    '''
+    This should work for any Digital Micrograph file (dm3,dm4) that is an image.
+    3D Datasets will only show 1st image in series (time series, etc).
+    Assumes that x & y pixel size are equal. 
+    '''
+    from ncempy.io import dm
+
+    data = dm.dmReader(filename)
+
+    image_data = data['data']
+    meta_data = {} 
+    [data.pop(k) for k in ['data','coords']]
+    pxSize = data['pixelSize'][1] 
+    for k,v in data.items():
+        meta_data[k] = str(v)
+    simple_meta_data = meta_data
+    simple_meta_data['Conversion Factor (m per px)'] =str(float(pxSize)*1e-9)        
+    if len(image_data.shape) > 2: #if dataset is 3D, return 1st image
+        image_data = image_data
+    return image_data, meta_data, simple_meta_data
 def SERImageLoad(filename):
     '''
     ????
@@ -226,6 +247,7 @@ def SERImageLoad(filename):
         image_data = image_data[0,:,:]
     return image_data, meta_data, simple_meta_data
 
+
 def main():
     '''
     Will load data for test images outside of GUI if this file is run separately. 
@@ -240,7 +262,7 @@ def main():
     j7900_fn = os.path.join(sharedLocation, r'7900',r'tt_LED_2.tif')    #JEOL 7900 Test File 
     j7900_mfn = os.path.join(sharedLocation,r'7900',r'tt_LED_2.TXT')      #JEOL 7900 Test File 
     bruker_fn = os.path.join(sharedLocation,r'BrukerFastScanAFM',r'test.0_00000.spm')    #Bruker test file
-    gatan_fn = os.path.join(sharedLocation,r'Gatan',r'Image.dm3') #Gatan test file 
+    gatan_fn = os.path.join(sharedLocation,r'Gatan',r'FocalSeries_Example.dm3') #Gatan test file 
 
 
     HS4800_idata,HS4800_mdata,HS4800_simple_mdata = HitachiSEMImageLoad(HS4800_fn,HS4800_mfn)
@@ -248,7 +270,8 @@ def main():
     j7900_idata,j7900_mdata,j7900_simple_mdata = JEOL7900SEMImageLoad(j7900_fn, j7900_mfn)
     bruker_idata,bruker_mdata,bruker_simple_mdata = BrukerAFMImageLoad(bruker_fn)
     dm3_idata,dm3_mdata,dm3_simple_mdata = dmImageLoad(gatan_fn)
-    print(bruker_mdata)
+    #print(bruker_mdata)
+    
     
     '''
     fig, ax = plt.subplots(1,5, figsize=(14,3))

@@ -20,6 +20,7 @@ from matplotlib_scalebar.scalebar import ScaleBar
 from mpl_toolkits.axes_grid1.anchored_artists import AnchoredSizeBar
 import matplotlib.font_manager as fm
 from scipy.ndimage import gaussian_filter, laplace, sobel, gaussian_laplace
+from matplotlib.widgets import Slider, Button, RadioButtons
 from ImageLoadLibraries_v0 import *
 mpl.use('Qt5Agg')
 progname = os.path.basename(sys.argv[0])
@@ -310,7 +311,6 @@ class Window(QMainWindow):
         metawidget.metaChoice.currentIndexChanged.connect(self.changeMetadataType)
         metawidget.layout().addWidget(QLabel("Image List"))
         metawidget.layout().addWidget(metawidget.fql)
-        metawidget.layout().addWidget(QtWidgets.QLabel("Metadata Table"))
         metawidget.layout().addWidget(metawidget.metaChoice)
         metawidget.layout().addWidget(metawidget.table)         
         
@@ -337,7 +337,15 @@ class Window(QMainWindow):
         addFile = QAction('&Add New File', self)
         addFile.setShortcut('Ctrl+A')
         addFile.setStatusTip('Open File')
-        addFile.triggered.connect(self.addFilewMetaDataLoad)              
+        addFile.triggered.connect(self.addFilewMetaDataLoad)
+        loadVideo = QAction('&Load Video File', self)
+        loadVideo.setShortcut('Ctrl+V')
+        loadVideo.setStatusTip('Open File')
+        loadVideo.triggered.connect(self.addVideoFileLoad)    
+        loadHDF5 = QAction('&Load HDF File', self)
+        loadHDF5.setShortcut('Ctrl+H')
+        loadHDF5.setStatusTip('Open File')
+        loadHDF5.triggered.connect(self.loadSavedHDF5)            
         saveLog = QAction('&Save Log File',self)
         saveLog.setShortcut('Ctrl+L')
         saveLog.setStatusTip('Save Log File')
@@ -366,6 +374,8 @@ class Window(QMainWindow):
         fileMenu = menuBar.addMenu('&File')
         fileMenu.addAction(loadFile)
         fileMenu.addAction(addFile)
+        fileMenu.addAction(loadVideo)
+        fileMenu.addAction(loadHDF5)
         fileMenu.addAction(saveLog)
         fileMenu.addAction(saveHDF5)
         fileMenu.addAction(exitAct)
@@ -449,7 +459,202 @@ class Window(QMainWindow):
         logfname = 'Output.txt'
         np.savetxt(logfname,[self.logwidget.textw.toPlainText()], fmt='%s',encoding='utf-8')
         self.logwidget.textw.append(f"Saved log to file: {logfname}\n")
+    
+    def loadSavedHDF5(self):
+        self.dlg = QFileDialog()
+        filefilters = "HDF5 (*.hdf5)"
+        fname, filterChoice = self.dlg.getOpenFileName(self, "Select an Image file...",filter=filefilters,options=QFileDialog.DontUseNativeDialog)            
+        #select correct image loading function based on choice from file menu
+        try: del imdata
+        except: pass
+        try: del metadata
+        except: pass
+        try: del simplemdata
+        except: pass
+    
+        hfdata = h5py.File(fname,"a")
+        imglist = list(hfdata.keys())
+        imgOrd = [hfdata[imglistv].attrs['n'] for imglistv in imglist]
+        imglistOrd = [x for _,x in sorted(zip(imgOrd,imglist))]   
+        self.ordimglist = [x for _,x in sorted(zip(imgOrd,imglist))] 
+        imgN = len(hfdata.keys())
+        global tempHF
+        nhdfkeys = len(tempHF.keys())
+        tempHF.close()
+        if nhdfkeys != 0:
+            os.remove(self.hdf5name)
+        tempHF = h5py.File(self.hdf5name,"a") 
         
+        with h5py.File(fname,"a") as hfload: 
+            for item in hfload.keys():
+                self.metawidget.fql.insertItem(imgN,item)                    
+                hfload.copy(item,tempHF)
+
+        vertHeaders = []
+        self.metawidget.metaChoice.setCurrentIndex(0)
+        self.metawidget.table.setRowCount(len(tempHF[imglistOrd[0]]['SimpleMetadata'].keys()))
+        for n,key in enumerate(tempHF[imglistOrd[0]]['SimpleMetadata'].keys()):
+            vertHeaders.append(key)
+            newitem = QTableWidgetItem(tempHF[imglistOrd[0]]['SimpleMetadata'][key][()])
+            self.metawidget.table.setVerticalHeaderLabels(vertHeaders)
+            self.metawidget.table.setItem(0, n, newitem)
+            self.metawidget.table.resizeColumnsToContents()
+            self.metawidget.table.resizeRowsToContents()
+        
+                
+        if imgN == 1:
+            self.figwidget.figure.clear() #clear figure
+            self.ax = self.figwidget.figure.add_subplot(111) # create an axis
+            self.ax.imshow(tempHF[imglistOrd[0]]['Im'][()])  #plot data
+            self.ax.axis("off")
+            self.figwidget.figure.tight_layout()
+            self.figwidget.canvas.draw() # refresh canvas            
+        if imgN == 2:
+            self.figwidget.figure.clear() #clear figure
+            self.ax = self.figwidget.figure.add_subplot(121) # create an axis
+            self.ax.imshow(tempHF[imglistOrd[0]]['Im'][()])  #plot data
+            self.ax.axis("off")
+    
+            self.ax2 = self.figwidget.figure.add_subplot(122)
+            self.ax2.imshow(tempHF[imglistOrd[1]]['Im'][()])  #plot data
+            self.ax2.axis("off")
+            self.figwidget.figure.tight_layout()
+            self.figwidget.canvas.draw() # refresh canvas
+            
+        elif imgN == 3:
+            self.figwidget.figure.clear() #clear figure
+            self.ax = self.figwidget.figure.add_subplot(131) # create an axis
+            self.ax.imshow(tempHF[imglistOrd[0]]['Im'][()])  #plot data
+            self.ax.axis("off")
+    
+            self.ax2 = self.figwidget.figure.add_subplot(132)
+            self.ax2.imshow(tempHF[imglistOrd[1]]['Im'][()])  #plot data
+            self.ax2.axis("off")
+            self.figwidget.figure.tight_layout()
+            self.figwidget.canvas.draw() # refresh canvas
+            
+            self.ax3 = self.figwidget.figure.add_subplot(133)
+            self.ax3.imshow(tempHF[imglistOrd[2]]['Im'][()])  #plot data
+            self.ax3.axis("off")
+            self.figwidget.figure.tight_layout()
+            self.figwidget.canvas.draw() # refresh canvas            
+        elif imgN == 4:
+            self.figwidget.figure.clear() #clear figure
+            self.ax = self.figwidget.figure.add_subplot(221) # create an axis
+            self.ax.imshow(tempHF[imglistOrd[0]]['Im'][()])  #plot data
+            self.ax.axis("off")
+    
+            self.ax2 = self.figwidget.figure.add_subplot(222)
+            self.ax2.imshow(tempHF[imglistOrd[1]]['Im'][()])  #plot data
+            self.ax2.axis("off")
+            self.figwidget.figure.tight_layout()
+            self.figwidget.canvas.draw() # refresh canvas
+
+            self.ax3 = self.figwidget.figure.add_subplot(223)
+            self.ax3.imshow(tempHF[imglistOrd[2]]['Im'][()])  #plot data
+            self.ax3.axis("off")
+            self.figwidget.figure.tight_layout()
+            self.figwidget.canvas.draw() # refresh canvas
+            
+            self.ax4 = self.figwidget.figure.add_subplot(224)
+            self.ax4.imshow(tempHF[imglistOrd[-1]]['Im'][()])  #plot data
+            self.ax4.axis("off")
+            self.figwidget.figure.tight_layout()
+            self.figwidget.canvas.draw() # refresh canvas
+
+        elif imgN > 4:
+            self.figwidget.figure.clear() #clear figure
+            self.ax = self.figwidget.figure.add_subplot(221) # create an axis
+            self.ax.imshow(tempHF[imglistOrd[0]]['Im'][()])  #plot data
+            self.ax.axis("off")
+    
+            self.ax2 = self.figwidget.figure.add_subplot(222)
+            self.ax2.imshow(tempHF[imglistOrd[1]]['Im'][()])  #plot data
+            self.ax2.axis("off")
+            self.figwidget.figure.tight_layout()
+            self.figwidget.canvas.draw() # refresh canvas
+
+            self.ax3 = self.figwidget.figure.add_subplot(223)
+            self.ax3.imshow(tempHF[imglistOrd[2]]['Im'][()])  #plot data
+            self.ax3.axis("off")
+            self.figwidget.figure.tight_layout()
+            self.figwidget.canvas.draw() # refresh canvas
+            
+            self.ax4 = self.figwidget.figure.add_subplot(224)
+            self.ax4.imshow(tempHF[imglistOrd[-1]]['Im'][()])  #plot data
+            self.ax4.axis("off")
+            self.figwidget.figure.tight_layout()
+            self.figwidget.canvas.draw() # refresh canvas
+
+        
+        
+    
+    def addVideoFileLoad(self):
+        self.fname,self.filterChoice, self.imdata,self.metadata,self.simplemdata = chooseFileType(self)      
+        fnhead,fntail = os.path.split(self.fname)
+        self.metawidget.fql.clear()
+        self.metawidget.fql.insertItem(0,fntail)
+        self.metawidget.fql.setCurrentRow(0)        
+        #self.metawidget.metaChoice.clear()
+        #self.metawidget.metaChoice.addItem("Full Metadata")
+        #self.metawidget.metaChoice.addItem("Simplified Metadata")   
+        
+        print(self.imdata.shape)
+        
+        global tempHF
+        nhdfkeys = len(tempHF.keys())
+        tempHF.close()
+        if nhdfkeys != 0:
+            os.remove(self.hdf5name)
+            
+        tempHF = h5py.File(self.hdf5name,"a")            
+        #Save data/metadata into HF backend
+        imgrp = tempHF.create_group(fntail)
+        imgrp.attrs['n'] = 1      
+        imgrp['filename'] = self.fname
+        imgrp['Im'] = self.imdata
+        imgrp['Raw Im'] = self.imdata        
+        ogrp = imgrp.create_group("OriginalMetadata")
+        for item in self.metadata.items():
+            ogrp[item[0]] = item[1]     
+        sgrp = imgrp.create_group("SimpleMetadata")
+        for item in self.simplemdata.items():
+            sgrp[item[0]] = item[1]     
+
+        self.ordimglist = list(tempHF.keys())            
+
+
+        #convert metadata to table
+        vertHeaders = []
+        self.metawidget.metaChoice.setCurrentIndex(0)
+        self.metawidget.table.setRowCount(len(tempHF[fntail]['SimpleMetadata'].keys()))
+        for n,key in enumerate(tempHF[fntail]['SimpleMetadata'].keys()):
+            vertHeaders.append(key)
+            newitem = QTableWidgetItem(tempHF[fntail]['SimpleMetadata'][key][()])
+            self.metawidget.table.setVerticalHeaderLabels(vertHeaders)
+            self.metawidget.table.setItem(0, n, newitem)
+            self.metawidget.table.resizeColumnsToContents()
+            self.metawidget.table.resizeRowsToContents()
+            
+
+        self.figwidget.figure.clear() #clear figure
+        self.ax = self.figwidget.figure.add_subplot(111) # create an axis
+        axsl = self.figwidget.figure.add_axes([0.19,0.06,0.65,0.05])
+        samp = Slider(axsl,'Frame: ', 0, tempHF[fntail]['Im'][()].shape[0]-1, valinit=0,valstep=1)
+
+        def slideupdate(val):
+            amp = samp.val
+            ampind = np.int(amp)
+            currentim = tempHF[fntail]['Im'][()][ampind,:,:]
+            self.ax.imshow(currentim)
+            self.figwidget.canvas.draw() # refresh canvas    
+        
+        samp.on_changed(slideupdate)
+
+        self.ax.imshow(tempHF[fntail]['Im'][()][0,:,:])  #plot data
+        self.ax.axis("off")
+        self.figwidget.canvas.draw() # refresh canvas              
+    
     def clickedFilewMetaDataLoad(self):
         self.fname,self.filterChoice, self.imdata,self.metadata,self.simplemdata = chooseFileType(self)      
         fnhead,fntail = os.path.split(self.fname)
