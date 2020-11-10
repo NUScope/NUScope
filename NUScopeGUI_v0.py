@@ -8,8 +8,8 @@ Created on Wed May  6 15:31:55 2020
 import sys
 import os 
 from PyQt5 import QtWidgets,QtCore
-from PyQt5.QtWidgets import QDialog, QListWidget, QApplication, QCheckBox, QComboBox, QLabel,QPushButton, QMessageBox, QHBoxLayout,QVBoxLayout, QMainWindow,QFileDialog,QWidget, QGridLayout, QLineEdit, QTextBrowser,QTableWidget,QTableWidgetItem, qApp,QMenu,QAction
-from PyQt5.QtGui import QIcon, QPixmap
+from PyQt5.QtWidgets import QDialog, QListWidget, QApplication, QCheckBox, QComboBox, QLabel,QPushButton, QMessageBox, QHBoxLayout,QVBoxLayout, QMainWindow,QFileDialog,QWidget, QGridLayout, QLineEdit, QTextBrowser,QTableWidget,QTableWidgetItem,QMenu,QAction
+from PyQt5.QtGui import QPixmap
 import matplotlib as mpl
 import numpy as np
 import h5py
@@ -22,12 +22,9 @@ import matplotlib.font_manager as fm
 from scipy.ndimage import gaussian_filter, laplace, sobel, gaussian_laplace
 from matplotlib.widgets import Slider, Button, RadioButtons
 from ImageLoadLibraries_v0 import *
-mpl.use('Qt5Agg')
-progname = os.path.basename(sys.argv[0])
-progversion = "0.1"
 
 #Default plotting settings. Setting globally so all figures/images use these.
-#We probably GUI window to modify these.
+mpl.use('Qt5Agg')
 mpl.rc('image',cmap='gray')
 mpl.rc('savefig',transparent=True,dpi=1500)
 
@@ -365,7 +362,10 @@ class Window(QMainWindow):
         clearfilteract.triggered.connect(clearAllFilters(self))
         fftfilteract = QAction('&FFT',self)
         fftfilteract.triggered.connect(self.applyFFT)
-        
+        videofilteract = QAction('&Filter Settings',self)
+        videofilteract.triggered.connect(self.openFilterSettingsVideo)
+        videofftfilteract = QAction('&FFT',self)
+        videofftfilteract.triggered.connect(self.applyFFTVideo)        
         plotsettingsact = QAction('&Plot Settings',self)
         plotsettingsact.triggered.connect(self.OpenPlotSettingsWindow)
         #setup menu bar with basic actions
@@ -380,13 +380,17 @@ class Window(QMainWindow):
         fileMenu.addAction(saveHDF5)
         fileMenu.addAction(exitAct)
         toolMenu = menuBar.addMenu('&Tools')
-        filtersubMenu = QMenu('&Filters',self)
-        toolMenu.addMenu(filtersubMenu)
-        filtersubMenu.addAction(filteract)
-        filtersubMenu.addAction(gaussfilteract)
-        filtersubMenu.addAction(clearfilteract)
-        toolMenu.addAction(fftfilteract)
-        toolMenu.addAction(plotsettingsact)
+        imagesubMenu = QMenu('& Image Functions',self)
+        toolMenu.addMenu(imagesubMenu)
+        imagesubMenu.addAction(filteract)
+        imagesubMenu.addAction(gaussfilteract)
+        imagesubMenu.addAction(clearfilteract)
+        imagesubMenu.addAction(fftfilteract)
+        imagesubMenu.addAction(plotsettingsact)
+        videosubMenu = QMenu('& Video Functions', self)
+        videosubMenu.addAction(videofilteract)     
+        videosubMenu.addAction(videofftfilteract)          
+        toolMenu.addMenu(videosubMenu)
         helpMenu = menuBar.addMenu('&Help')
         helpMenu.addAction(abtAct)        
         
@@ -402,7 +406,6 @@ class Window(QMainWindow):
         cfn = self.metawidget.fql.currentItem().text()
         #select which metadata variable to use
         usedMetaData = tempHF[cfn]['SimpleMetadata']           
-        #usedMetaData = tempHF[fnl[3]]['OriginalMetadata'] 
         vertHeaders = []
         self.metawidget.table.setRowCount(len(usedMetaData.keys()))
         for n,key in enumerate(usedMetaData.keys()):
@@ -463,21 +466,18 @@ class Window(QMainWindow):
     def loadSavedHDF5(self):
         self.dlg = QFileDialog()
         filefilters = "HDF5 (*.hdf5)"
-        fname, filterChoice = self.dlg.getOpenFileName(self, "Select an Image file...",filter=filefilters,options=QFileDialog.DontUseNativeDialog)            
+        self.fname, self.filterChoice = self.dlg.getOpenFileName(self, "Select an Image file...",filter=filefilters,options=QFileDialog.DontUseNativeDialog)            
+        
+        if self.fname == "":
+            print("EMPTY!")
+        
+        self.metawidget.fql.clear()
+        self.metawidget.fql.setCurrentRow(0)        
+
         #select correct image loading function based on choice from file menu
-        try: del imdata
+        try: del imdata, metadata, simplemdata
         except: pass
-        try: del metadata
-        except: pass
-        try: del simplemdata
-        except: pass
-    
-        hfdata = h5py.File(fname,"a")
-        imglist = list(hfdata.keys())
-        imgOrd = [hfdata[imglistv].attrs['n'] for imglistv in imglist]
-        imglistOrd = [x for _,x in sorted(zip(imgOrd,imglist))]   
-        self.ordimglist = [x for _,x in sorted(zip(imgOrd,imglist))] 
-        imgN = len(hfdata.keys())
+
         global tempHF
         nhdfkeys = len(tempHF.keys())
         tempHF.close()
@@ -485,10 +485,17 @@ class Window(QMainWindow):
             os.remove(self.hdf5name)
         tempHF = h5py.File(self.hdf5name,"a") 
         
-        with h5py.File(fname,"a") as hfload: 
-            for item in hfload.keys():
-                self.metawidget.fql.insertItem(imgN,item)                    
-                hfload.copy(item,tempHF)
+        hfdata = h5py.File(self.fname,"a")
+        imglist = list(hfdata.keys())
+        imgOrd = [hfdata[imglistv].attrs['n'] for imglistv in imglist]
+        imglistOrd = [x for _,x in sorted(zip(imgOrd,imglist))]   
+        self.ordimglist = [x for _,x in sorted(zip(imgOrd,imglist))] 
+        imgN = len(hfdata.keys())
+        for n,item in enumerate(self.ordimglist):
+            self.metawidget.fql.insertItem(n,item)          
+        for item in hfdata.keys():
+                hfdata.copy(item,tempHF)            
+        hfdata.close()
 
         vertHeaders = []
         self.metawidget.metaChoice.setCurrentIndex(0)
@@ -499,8 +506,7 @@ class Window(QMainWindow):
             self.metawidget.table.setVerticalHeaderLabels(vertHeaders)
             self.metawidget.table.setItem(0, n, newitem)
             self.metawidget.table.resizeColumnsToContents()
-            self.metawidget.table.resizeRowsToContents()
-        
+            self.metawidget.table.resizeRowsToContents()      
                 
         if imgN == 1:
             self.figwidget.figure.clear() #clear figure
@@ -586,20 +592,15 @@ class Window(QMainWindow):
             self.figwidget.figure.tight_layout()
             self.figwidget.canvas.draw() # refresh canvas
 
-        
-        
-    
     def addVideoFileLoad(self):
-        self.fname,self.filterChoice, self.imdata,self.metadata,self.simplemdata = chooseFileType(self)      
-        fnhead,fntail = os.path.split(self.fname)
+        self.fname,self.filterChoice, self.imdata,self.metadata,self.simplemdata = chooseVideoType(self)      
+        fndir,fn = os.path.split(self.fname)
         self.metawidget.fql.clear()
-        self.metawidget.fql.insertItem(0,fntail)
+        self.metawidget.fql.insertItem(0,fn)
         self.metawidget.fql.setCurrentRow(0)        
         #self.metawidget.metaChoice.clear()
         #self.metawidget.metaChoice.addItem("Full Metadata")
         #self.metawidget.metaChoice.addItem("Simplified Metadata")   
-        
-        print(self.imdata.shape)
         
         global tempHF
         nhdfkeys = len(tempHF.keys())
@@ -609,7 +610,7 @@ class Window(QMainWindow):
             
         tempHF = h5py.File(self.hdf5name,"a")            
         #Save data/metadata into HF backend
-        imgrp = tempHF.create_group(fntail)
+        imgrp = tempHF.create_group(fn)
         imgrp.attrs['n'] = 1      
         imgrp['filename'] = self.fname
         imgrp['Im'] = self.imdata
@@ -627,10 +628,10 @@ class Window(QMainWindow):
         #convert metadata to table
         vertHeaders = []
         self.metawidget.metaChoice.setCurrentIndex(0)
-        self.metawidget.table.setRowCount(len(tempHF[fntail]['SimpleMetadata'].keys()))
-        for n,key in enumerate(tempHF[fntail]['SimpleMetadata'].keys()):
+        self.metawidget.table.setRowCount(len(tempHF[fn]['SimpleMetadata'].keys()))
+        for n,key in enumerate(tempHF[fn]['SimpleMetadata'].keys()):
             vertHeaders.append(key)
-            newitem = QTableWidgetItem(tempHF[fntail]['SimpleMetadata'][key][()])
+            newitem = QTableWidgetItem(tempHF[fn]['SimpleMetadata'][key][()])
             self.metawidget.table.setVerticalHeaderLabels(vertHeaders)
             self.metawidget.table.setItem(0, n, newitem)
             self.metawidget.table.resizeColumnsToContents()
@@ -640,26 +641,26 @@ class Window(QMainWindow):
         self.figwidget.figure.clear() #clear figure
         self.ax = self.figwidget.figure.add_subplot(111) # create an axis
         axsl = self.figwidget.figure.add_axes([0.19,0.06,0.65,0.05])
-        samp = Slider(axsl,'Frame: ', 0, tempHF[fntail]['Im'][()].shape[0]-1, valinit=0,valstep=1)
+        samp = Slider(axsl,'Frame: ', 0, tempHF[fn]['Im'][()].shape[0]-1, valinit=0,valstep=1)
 
         def slideupdate(val):
             amp = samp.val
             ampind = np.int(amp)
-            currentim = tempHF[fntail]['Im'][()][ampind,:,:]
+            currentim = tempHF[fn]['Im'][()][ampind,:,:]
             self.ax.imshow(currentim)
             self.figwidget.canvas.draw() # refresh canvas    
         
         samp.on_changed(slideupdate)
 
-        self.ax.imshow(tempHF[fntail]['Im'][()][0,:,:])  #plot data
+        self.ax.imshow(tempHF[fn]['Im'][()][0,:,:])  #plot data
         self.ax.axis("off")
         self.figwidget.canvas.draw() # refresh canvas              
     
     def clickedFilewMetaDataLoad(self):
         self.fname,self.filterChoice, self.imdata,self.metadata,self.simplemdata = chooseFileType(self)      
-        fnhead,fntail = os.path.split(self.fname)
+        fndir,fn = os.path.split(self.fname)
         self.metawidget.fql.clear()
-        self.metawidget.fql.insertItem(0,fntail)
+        self.metawidget.fql.insertItem(0,fn)
         self.metawidget.fql.setCurrentRow(0)        
         #self.metawidget.metaChoice.clear()
         #self.metawidget.metaChoice.addItem("Full Metadata")
@@ -673,7 +674,7 @@ class Window(QMainWindow):
             
         tempHF = h5py.File(self.hdf5name,"a")            
         #Save data/metadata into HF backend
-        imgrp = tempHF.create_group(fntail)
+        imgrp = tempHF.create_group(fn)
         imgrp.attrs['n'] = 1      
         imgrp['filename'] = self.fname
         imgrp['Im'] = self.imdata
@@ -691,10 +692,10 @@ class Window(QMainWindow):
         #convert metadata to table
         vertHeaders = []
         self.metawidget.metaChoice.setCurrentIndex(0)
-        self.metawidget.table.setRowCount(len(tempHF[fntail]['SimpleMetadata'].keys()))
-        for n,key in enumerate(tempHF[fntail]['SimpleMetadata'].keys()):
+        self.metawidget.table.setRowCount(len(tempHF[fn]['SimpleMetadata'].keys()))
+        for n,key in enumerate(tempHF[fn]['SimpleMetadata'].keys()):
             vertHeaders.append(key)
-            newitem = QTableWidgetItem(tempHF[fntail]['SimpleMetadata'][key][()])
+            newitem = QTableWidgetItem(tempHF[fn]['SimpleMetadata'][key][()])
             self.metawidget.table.setVerticalHeaderLabels(vertHeaders)
             self.metawidget.table.setItem(0, n, newitem)
             self.metawidget.table.resizeColumnsToContents()
@@ -705,32 +706,31 @@ class Window(QMainWindow):
         self.ax = self.figwidget.figure.add_subplot(111) # create an axis
 
 
-        self.ax.imshow(tempHF[fntail]['Im'][()])  #plot data
+        self.ax.imshow(tempHF[fn]['Im'][()])  #plot data
         self.ax.axis("off")
         self.figwidget.figure.tight_layout()
-        self.figwidget.canvas.draw() # refresh canvas      
+        self.figwidget.canvas.draw() # refresh canvas   
+        
+        
 
     def addFilewMetaDataLoad(self):
         self.fname,self.filterChoice, self.imdata,self.metadata,self.simplemdata = chooseFileType(self)      
-        fnhead,fntail = os.path.split(self.fname)        
-
+        fndir,fn = os.path.split(self.fname)        
           
         global tempHF
         tempHF = h5py.File(self.hdf5name,"a") 
         imglist = list(tempHF.keys())            
         imgN = len(tempHF.keys())
 
-        self.metawidget.fql.insertItem(imgN,fntail)
+        self.metawidget.fql.insertItem(imgN,fn)
 
-
-
-        if fntail in imglist:
+        if fn in imglist:
             try:
-                fntail = fntail + "Copy" 
+                fn = fn + "Copy" 
             except:
-                fntail = fntail + "Copy2"                     
+                fn = fn + "Copy2"                     
         #Save data/metadata into HF backend
-        imgrp = tempHF.create_group(fntail) 
+        imgrp = tempHF.create_group(fn) 
         imgrp.attrs['n'] = imgN+1
         imgrp['filename'] = self.fname
         imgrp['Im'] = self.imdata
@@ -858,319 +858,437 @@ class Window(QMainWindow):
         tempHF.close()
 
     def openFilterSettings(self):
-            self.fw = filteringWindow()
-            self.fw.show()
-            self.fw.exec_()
-            isCheckedChoice = [self.fw.qc1.isChecked(),self.fw.qc2.isChecked(),self.fw.qc3.isChecked(),self.fw.qc4.isChecked()]
-            filterValues = self.fw.filterValues
-            sigmav = filterValues[1]            
+        self.fw = filteringWindow()
+        self.fw.show()
+        self.fw.exec_()
+        isCheckedChoice = [self.fw.qc1.isChecked(),self.fw.qc2.isChecked(),self.fw.qc3.isChecked(),self.fw.qc4.isChecked()]
+        filterValues = self.fw.filterValues
+        sigmav = filterValues[1]            
+        global tempHF
+        imglist = self.ordimglist
+        if filterValues[0] == "Gaussian":
+            for n,i in enumerate(isCheckedChoice):
+                if i == True:
+                    try:
+                        tempHF[imglist[n]]['fIm'] = gaussian_filter(tempHF[imglist[n]]['Im'],sigmav)
+                    except:
+                        tempHF[imglist[n]]['fIm'][()] = gaussian_filter(tempHF[imglist[n]]['Im'],sigmav)                            
+                    tempHF[imglist[n]]['Im'][()] = tempHF[imglist[n]]['fIm'][()]
+                elif i == False:
+                    continue                    
+            self.logwidget.textw.append(f"Applied Gaussian Filter with \u03C3 = {sigmav}\n")                 
+        elif filterValues[0] == "Gaussian-laplace":
+            for n,i in enumerate(isCheckedChoice):
+                if i == True:
+                    try:
+                        tempHF[imglist[n]]['fIm'] = gaussian_laplace(tempHF[imglist[n]]['Im'],sigmav)
+                    except:
+                        tempHF[imglist[n]]['fIm'][()] = gaussian_laplace(tempHF[imglist[n]]['Im'],sigmav)                            
+                    tempHF[imglist[n]]['Im'][()] = tempHF[imglist[n]]['fIm'][()]
+                elif i == False:
+                    continue
+            self.logwidget.textw.append(f"Applied Gaussian-Laplace Filter with \u03C3 = {sigmav}\n")             
+        
+        elif filterValues[0] == "Laplace":
+            for n,i in enumerate(isCheckedChoice):
+                if i == True:
+                    try:
+                        tempHF[imglist[n]]['fIm'] = laplace(tempHF[imglist[n]]['Im'])
+                    except:
+                        tempHF[imglist[n]]['fIm'][()] = laplace(tempHF[imglist[n]]['Im'])                            
+                    tempHF[imglist[n]]['Im'][()] = tempHF[imglist[n]]['fIm'][()]
+                elif i == False:
+                    continue                    
+            self.logwidget.textw.append(f"Applied {filterValues[0]} Filter\n") 
+        elif filterValues[0] == "Sobel":
+            for n,i in enumerate(isCheckedChoice):
+                if i == True:
+                    try:
+                        tempHF[imglist[n]]['fIm'] = sobel(tempHF[imglist[n]]['Im'])
+                    except:
+                        tempHF[imglist[n]]['fIm'][()] = sobel(tempHF[imglist[n]]['Im'])                            
+                    tempHF[imglist[n]]['Im'][()] = tempHF[imglist[n]]['fIm'][()]
+                elif i == False:
+                    continue                   
+            self.logwidget.textw.append(f"Applied {filterValues[0]} Filter\n") 
+        elif filterValues[0] == "None":
+            pass
+        else:
+            pass
+        if len(imglist) == 1:
+            self.figwidget.figure.clear() #clear figure
+            self.ax = self.figwidget.figure.add_subplot(111) # create an axis
+            self.ax.imshow(tempHF[imglist[0]]['Im'][()])  #plot data
+            self.ax.axis("off")
+            self.figwidget.figure.tight_layout()
+            self.figwidget.canvas.draw() # refresh canvas                
+                    
+        elif len(imglist) == 2:
+            self.figwidget.figure.clear() #clear figure
+            self.ax = self.figwidget.figure.add_subplot(121) # create an axis
+            self.ax.imshow(tempHF[imglist[0]]['Im'][()])  #plot data
+            self.ax.axis("off")
+    
+            self.ax2 = self.figwidget.figure.add_subplot(122)
+            self.ax2.imshow(tempHF[imglist[1]]['Im'][()])  #plot data
+            self.ax2.axis("off")
+            self.figwidget.figure.tight_layout()
+            self.figwidget.canvas.draw() # refresh canvas
+        elif len(imglist) == 3:
+            self.figwidget.figure.clear() #clear figure
+            self.ax = self.figwidget.figure.add_subplot(131) # create an axis
+            self.ax.imshow(tempHF[imglist[0]]['Im'][()])  #plot data
+            self.ax.axis("off")
+    
+            self.ax2 = self.figwidget.figure.add_subplot(132)
+            self.ax2.imshow(tempHF[imglist[1]]['Im'][()])  #plot data
+            self.ax2.axis("off")
+            
+            self.ax3 = self.figwidget.figure.add_subplot(133)
+            self.ax3.imshow(tempHF[imglist[2]]['Im'][()])  #plot data
+            self.ax3.axis("off")                
+            self.figwidget.figure.tight_layout()
+            self.figwidget.canvas.draw() # refresh canvas            
+        elif len(imglist) == 4:
+            self.figwidget.figure.clear() #clear figure
+            self.ax = self.figwidget.figure.add_subplot(221) # create an axis
+            self.ax.imshow(tempHF[imglist[0]]['Im'][()])  #plot data
+            self.ax.axis("off")
+    
+            self.ax2 = self.figwidget.figure.add_subplot(222)
+            self.ax2.imshow(tempHF[imglist[1]]['Im'][()])  #plot data
+            self.ax2.axis("off")
+            
+            self.ax3 = self.figwidget.figure.add_subplot(223) # create an axis
+            self.ax3.imshow(tempHF[imglist[2]]['Im'][()])  #plot data
+            self.ax3.axis("off")
+    
+            self.ax4 = self.figwidget.figure.add_subplot(223)
+            self.ax4.imshow(tempHF[imglist[-1]]['Im'][()])  #plot data
+            self.ax4.axis("off")
+            
+            self.figwidget.figure.tight_layout()
+            self.figwidget.canvas.draw() # refresh canvas 
+        elif len(imglist) > 4:
+            self.figwidget.figure.clear() #clear figure
+            self.ax = self.figwidget.figure.add_subplot(221) # create an axis
+            self.ax.imshow(tempHF[imglist[0]]['Im'][()])  #plot data
+            self.ax.axis("off")
+    
+            self.ax2 = self.figwidget.figure.add_subplot(222)
+            self.ax2.imshow(tempHF[imglist[1]]['Im'][()])  #plot data
+            self.ax2.axis("off")
+            
+            self.ax3 = self.figwidget.figure.add_subplot(223) # create an axis
+            self.ax3.imshow(tempHF[imglist[2]]['Im'][()])  #plot data
+            self.ax3.axis("off")
+    
+            self.ax4 = self.figwidget.figure.add_subplot(223)
+            self.ax4.imshow(tempHF[imglist[-1]]['Im'][()])  #plot data
+            self.ax4.axis("off")
+            
+            self.figwidget.figure.tight_layout()
+            self.figwidget.canvas.draw() # refresh canvas                 
+    def openFilterSettingsVideo(self):
+        self.fw = filteringWindow()
+        self.fw.show()
+        self.fw.exec_()
+        filterValues = self.fw.filterValues
+        sigmav = filterValues[1]
+        n = 0 
+        global tempHF
+        imglist = self.ordimglist
+        if filterValues[0] == "Gaussian":
+            tempflt = np.zeros(tempHF[imglist[n]]['Im'].shape)    
+            for i in range(tempHF[imglist[n]]['Im'].shape[0]):
+                temp_fr = tempHF[imglist[n]]['Im'][i,:,:]
+                temp_fr = gaussian_filter(temp_fr,sigmav)
+                tempflt[i,:,:] = temp_fr
+            try:
+                tempHF[imglist[n]]['fIm'] = tempflt
+            except:
+                tempHF[imglist[n]]['fIm'][()] = tempflt                            
+            tempHF[imglist[n]]['Im'][()] = tempHF[imglist[n]]['fIm'][()]                  
+            self.logwidget.textw.append(f"Applied Gaussian Filter with \u03C3 = {sigmav}\n")                 
+        elif filterValues[0] == "Gaussian-laplace":
+            pass
+        elif filterValues[0] == "None":
+            pass
+        else:
+            pass
+        
+        self.figwidget.figure.clear() #clear figure
+        self.ax = self.figwidget.figure.add_subplot(111) # create an axis
+        axsl = self.figwidget.figure.add_axes([0.19,0.06,0.65,0.05])
+        samp = Slider(axsl,'Frame: ', 0, tempHF[imglist[n]]['Im'][()].shape[0]-1, valinit=0,valstep=1)
+
+        def slideupdate(val):
+            amp = samp.val
+            ampind = np.int(amp)
+            currentim = tempHF[imglist[n]]['Im'][()][ampind,:,:]
+            self.ax.imshow(currentim)
+            self.figwidget.canvas.draw() # refresh canvas    
+        
+        samp.on_changed(slideupdate)
+
+        self.ax.imshow(tempHF[imglist[n]]['Im'][()][0,:,:])  #plot data
+        self.ax.axis("off")
+        self.figwidget.canvas.draw() # refresh canvas                   
+         
+                 
+    def OpenPlotSettingsWindow(self):
+        #issue with using >4 images..
+        self.ps = plotSettingsWindow()
+        self.ps.show()
+        self.ps.exec_()
+        def run():
+            global tempHF
+            try:
+                for axn in self.figwidget.figure.axes:
+                    axn.artists.pop(0)
+            except IndexError:
+                pass
+            axes = self.figwidget.figure.axes                    
+            for n,barlabel in enumerate(self.ps.scalelist):       
+                if barlabel == "N/A":
+                    continue
+                    print("N/A Skipped")
+                barunit = barlabel[-2:]                
+                if barunit == "um":
+                    barvalue = float(barlabel[:-2])*1e-6
+                    barlabel=barlabel[:-2]+"\u03BCm"
+                elif barunit == "nm":
+                    barvalue = float(barlabel[:-2])*1e-9
+                elif barunit == "mm":
+                    barvalue = float(barlabel[:-2])*1e-3
+                elif (barunit[-1] == "A") or (barunit[-1] == "a") :
+                    barvalue = float(barlabel[:-1])*1e-10
+                    barlabel=barlabel[:-1]+"A"                
+                try:
+                    if self.ps.conversionf.text() == "N/A":
+                        cf = float(tempHF[self.ordimglist[n]]['SimpleMetadata']['Conversion Factor (m per px)'][()])
+                        barsize = barvalue/cf                    
+                    else:
+                        barsize = float(self.ps.conversionf.text()) #Update this..
+                    
+                    scalebar = AnchoredSizeBar(axes[n].transData,
+                                   barsize, barlabel, 'lower left', 
+                                   pad=0.25,
+                                   color='black',frameon=True,
+                                   size_vertical=18,
+                                   fontproperties=fm.FontProperties(size=25, family='Arial'))
+        
+                    axes[n].add_artist(scalebar)
+                    self.figwidget.canvas.draw() # refresh canvas
+                except:
+                    self.logwidget.textw.append("Cannot add scalebar. Check metadata for conversion factor.\n")
+        if self.ps.labelApplied == True:
+            run()
+        else:
+            pass
+    def applyFFT(self):
+        self.fftw = fftWindow()
+        self.fftw.show()
+        self.fftw.exec_()
+        def run():
             global tempHF
             imglist = self.ordimglist
-            if filterValues[0] == "Gaussian":
-                for n,i in enumerate(isCheckedChoice):
-                    if i == True:
-                        try:
-                            tempHF[imglist[n]]['fIm'] = gaussian_filter(tempHF[imglist[n]]['Im'],sigmav)
-                        except:
-                            tempHF[imglist[n]]['fIm'][()] = gaussian_filter(tempHF[imglist[n]]['Im'],sigmav)                            
-                        tempHF[imglist[n]]['Im'][()] = tempHF[imglist[n]]['fIm'][()]
-                    elif i == False:
-                        continue                    
-                self.logwidget.textw.append(f"Applied Gaussian Filter with \u03C3 = {sigmav}\n")                 
-            elif filterValues[0] == "Gaussian-laplace":
-                for n,i in enumerate(isCheckedChoice):
-                    if i == True:
-                        try:
-                            tempHF[imglist[n]]['fIm'] = gaussian_laplace(tempHF[imglist[n]]['Im'],sigmav)
-                        except:
-                            tempHF[imglist[n]]['fIm'][()] = gaussian_laplace(tempHF[imglist[n]]['Im'],sigmav)                            
-                        tempHF[imglist[n]]['Im'][()] = tempHF[imglist[n]]['fIm'][()]
-                    elif i == False:
-                        continue
-                self.logwidget.textw.append(f"Applied Gaussian-Laplace Filter with \u03C3 = {sigmav}\n")             
+            for img in imglist:
+                rawfftData = np.fft.fft2(tempHF[img]['Im'][()])
+                shiftedfftData = np.fft.fftshift(rawfftData)
+                absShiftedfftData = np.abs(shiftedfftData)
+                if self.fftw.fftzscaling.currentText() == "None":
+                    plotfftData= absShiftedfftData
+                elif self.fftw.fftzscaling.currentText() == "Log":                    
+                    plotfftData = np.log(absShiftedfftData)
+                elif self.fftw.fftzscaling.currentText() == "Log10":                    
+                    plotfftData = np.log10(absShiftedfftData)
+                tempHF[img]['FFT'] = plotfftData
+                tempHF[img].attrs['FFTType'] = self.fftw.fftzscaling.currentText()  
             
-            elif filterValues[0] == "Laplace":
-                for n,i in enumerate(isCheckedChoice):
-                    if i == True:
-                        try:
-                            tempHF[imglist[n]]['fIm'] = laplace(tempHF[imglist[n]]['Im'])
-                        except:
-                            tempHF[imglist[n]]['fIm'][()] = laplace(tempHF[imglist[n]]['Im'])                            
-                        tempHF[imglist[n]]['Im'][()] = tempHF[imglist[n]]['fIm'][()]
-                    elif i == False:
-                        continue                    
-                self.logwidget.textw.append(f"Applied {filterValues[0]} Filter\n") 
-            elif filterValues[0] == "Sobel":
-                for n,i in enumerate(isCheckedChoice):
-                    if i == True:
-                        try:
-                            tempHF[imglist[n]]['fIm'] = sobel(tempHF[imglist[n]]['Im'])
-                        except:
-                            tempHF[imglist[n]]['fIm'][()] = sobel(tempHF[imglist[n]]['Im'])                            
-                        tempHF[imglist[n]]['Im'][()] = tempHF[imglist[n]]['fIm'][()]
-                    elif i == False:
-                        continue                   
-                self.logwidget.textw.append(f"Applied {filterValues[0]} Filter\n") 
-            elif filterValues[0] == "None":
-                pass
-            else:
-                pass
-            if len(imglist) == 1:
-                self.figwidget.figure.clear() #clear figure
-                self.ax = self.figwidget.figure.add_subplot(111) # create an axis
-                self.ax.imshow(tempHF[imglist[0]]['Im'][()])  #plot data
-                self.ax.axis("off")
-                self.figwidget.figure.tight_layout()
-                self.figwidget.canvas.draw() # refresh canvas                
-                        
-            elif len(imglist) == 2:
+            if len(imglist) == 1:                
                 self.figwidget.figure.clear() #clear figure
                 self.ax = self.figwidget.figure.add_subplot(121) # create an axis
-                self.ax.imshow(tempHF[imglist[0]]['Im'][()])  #plot data
+                self.ax.imshow(tempHF[img]['Im'][()])  #plot data
+                self.ax.set_title('Original Image')
                 self.ax.axis("off")
-        
                 self.ax2 = self.figwidget.figure.add_subplot(122)
-                self.ax2.imshow(tempHF[imglist[1]]['Im'][()])  #plot data
+                self.ax2.imshow(tempHF[img]['FFT'][()])  #plot data
+                self.ax2.set_title('FFT')
                 self.ax2.axis("off")
                 self.figwidget.figure.tight_layout()
                 self.figwidget.canvas.draw() # refresh canvas
-            elif len(imglist) == 3:
-                self.figwidget.figure.clear() #clear figure
-                self.ax = self.figwidget.figure.add_subplot(131) # create an axis
-                self.ax.imshow(tempHF[imglist[0]]['Im'][()])  #plot data
-                self.ax.axis("off")
-        
-                self.ax2 = self.figwidget.figure.add_subplot(132)
-                self.ax2.imshow(tempHF[imglist[1]]['Im'][()])  #plot data
-                self.ax2.axis("off")
-                
-                self.ax3 = self.figwidget.figure.add_subplot(133)
-                self.ax3.imshow(tempHF[imglist[2]]['Im'][()])  #plot data
-                self.ax3.axis("off")                
-                self.figwidget.figure.tight_layout()
-                self.figwidget.canvas.draw() # refresh canvas            
-            elif len(imglist) == 4:
+
+            elif len(imglist) == 2:                
                 self.figwidget.figure.clear() #clear figure
                 self.ax = self.figwidget.figure.add_subplot(221) # create an axis
                 self.ax.imshow(tempHF[imglist[0]]['Im'][()])  #plot data
+                self.ax.set_title('Original Image')
                 self.ax.axis("off")
-        
-                self.ax2 = self.figwidget.figure.add_subplot(222)
+
+                self.ax2 = self.figwidget.figure.add_subplot(222) # create an axis
                 self.ax2.imshow(tempHF[imglist[1]]['Im'][()])  #plot data
+                self.ax2.set_title('Original Image')
                 self.ax2.axis("off")
-                
-                self.ax3 = self.figwidget.figure.add_subplot(223) # create an axis
-                self.ax3.imshow(tempHF[imglist[2]]['Im'][()])  #plot data
-                self.ax3.axis("off")
         
-                self.ax4 = self.figwidget.figure.add_subplot(223)
-                self.ax4.imshow(tempHF[imglist[-1]]['Im'][()])  #plot data
-                self.ax4.axis("off")
+                self.ax3 = self.figwidget.figure.add_subplot(223)
+                self.ax3.imshow(tempHF[imglist[0]]['FFT'][()]) #plot data
+                self.ax3.set_title('FFT')
+                self.ax3.axis("off")
+
+        
+                self.ax4 = self.figwidget.figure.add_subplot(224)
+                self.ax4.imshow(tempHF[imglist[1]]['FFT'][()])   #plot data
+                self.ax4.set_title('FFT')
+                self.ax4.axis("off")                    
                 
                 self.figwidget.figure.tight_layout()
-                self.figwidget.canvas.draw() # refresh canvas 
-            elif len(imglist) > 4:
+                self.figwidget.canvas.draw() # refresh canvas
+            elif len(imglist) >= 3:                
                 self.figwidget.figure.clear() #clear figure
                 self.ax = self.figwidget.figure.add_subplot(221) # create an axis
                 self.ax.imshow(tempHF[imglist[0]]['Im'][()])  #plot data
+                self.ax.set_title('Original Image')
                 self.ax.axis("off")
-        
-                self.ax2 = self.figwidget.figure.add_subplot(222)
+
+                self.ax2 = self.figwidget.figure.add_subplot(222) # create an axis
                 self.ax2.imshow(tempHF[imglist[1]]['Im'][()])  #plot data
+                self.ax2.set_title('Original Image')
                 self.ax2.axis("off")
-                
-                self.ax3 = self.figwidget.figure.add_subplot(223) # create an axis
-                self.ax3.imshow(tempHF[imglist[2]]['Im'][()])  #plot data
-                self.ax3.axis("off")
         
-                self.ax4 = self.figwidget.figure.add_subplot(223)
-                self.ax4.imshow(tempHF[imglist[-1]]['Im'][()])  #plot data
-                self.ax4.axis("off")
+                self.ax3 = self.figwidget.figure.add_subplot(223)
+                self.ax3.imshow(tempHF[imglist[0]]['FFT'][()]) #plot data
+                self.ax3.set_title('FFT')
+                self.ax3.axis("off")
+
+        
+                self.ax4 = self.figwidget.figure.add_subplot(224)
+                self.ax4.imshow(tempHF[imglist[1]]['FFT'][()])   #plot data
+                self.ax4.set_title('FFT')
+                self.ax4.axis("off")                    
                 
                 self.figwidget.figure.tight_layout()
-                self.figwidget.canvas.draw() # refresh canvas                 
-    
-    def OpenPlotSettingsWindow(self):
-            #issue with using >4 images..
-            self.ps = plotSettingsWindow()
-            self.ps.show()
-            self.ps.exec_()
-            def run():
-                global tempHF
-                try:
-                    for axn in self.figwidget.figure.axes:
-                        axn.artists.pop(0)
-                except IndexError:
-                    pass
-                axes = self.figwidget.figure.axes                    
-                for n,barlabel in enumerate(self.ps.scalelist):       
-                    if barlabel == "N/A":
-                        continue
-                        print("N/A Skipped")
-                    barunit = barlabel[-2:]                
-                    if barunit == "um":
-                        barvalue = float(barlabel[:-2])*1e-6
-                        barlabel=barlabel[:-2]+"\u03BCm"
-                    elif barunit == "nm":
-                        barvalue = float(barlabel[:-2])*1e-9
-                    elif barunit == "mm":
-                        barvalue = float(barlabel[:-2])*1e-3
-                    elif (barunit[-1] == "A") or (barunit[-1] == "a") :
-                        barvalue = float(barlabel[:-1])*1e-10
-                        barlabel=barlabel[:-1]+"A"                
-                    try:
-                        if self.ps.conversionf.text() == "N/A":
-                            cf = float(tempHF[self.ordimglist[n]]['SimpleMetadata']['Conversion Factor (m per px)'][()])
-                            barsize = barvalue/cf                    
-                        else:
-                            barsize = float(self.ps.conversionf.text()) #Update this..
-                        
-                        scalebar = AnchoredSizeBar(axes[n].transData,
-                                       barsize, barlabel, 'lower left', 
-                                       pad=0.25,
-                                       color='black',frameon=True,
-                                       size_vertical=18,
-                                       fontproperties=fm.FontProperties(size=25, family='Arial'))
-            
-                        axes[n].add_artist(scalebar)
-                        self.figwidget.canvas.draw() # refresh canvas
-                    except:
-                        self.logwidget.textw.append("Cannot add scalebar. Check metadata for conversion factor.\n")
-            if self.ps.labelApplied == True:
-                run()
-            else:
-                pass
-    def applyFFT(self):
-            self.fftw = fftWindow()
-            self.fftw.show()
-            self.fftw.exec_()
-            def run():
-                global tempHF
-                imglist = self.ordimglist
-                for img in imglist:
-                    rawfftData = np.fft.fft2(tempHF[img]['Im'][()])
-                    shiftedfftData = np.fft.fftshift(rawfftData)
-                    absShiftedfftData = np.abs(shiftedfftData)
-                    if self.fftw.fftzscaling.currentText() == "None":
-                        plotfftData= absShiftedfftData
-                    elif self.fftw.fftzscaling.currentText() == "Log":                    
-                        plotfftData = np.log(absShiftedfftData)
-                    elif self.fftw.fftzscaling.currentText() == "Log10":                    
-                        plotfftData = np.log10(absShiftedfftData)
-                    tempHF[img]['FFT'] = plotfftData
-                    tempHF[img].attrs['FFTType'] = self.fftw.fftzscaling.currentText()  
-                
-                if len(imglist) == 1:                
-                    self.figwidget.figure.clear() #clear figure
-                    self.ax = self.figwidget.figure.add_subplot(121) # create an axis
-                    self.ax.imshow(tempHF[img]['Im'][()])  #plot data
-                    self.ax.set_title('Original Image')
-                    self.ax.axis("off")
-            
-                    self.ax2 = self.figwidget.figure.add_subplot(122)
-                    self.ax2.imshow(tempHF[img]['FFT'][()])  #plot data
-                    self.ax2.set_title('FFT')
-                    self.ax2.axis("off")
-                    self.figwidget.figure.tight_layout()
-                    self.figwidget.canvas.draw() # refresh canvas
-
-                elif len(imglist) == 2:                
-                    self.figwidget.figure.clear() #clear figure
-                    self.ax = self.figwidget.figure.add_subplot(221) # create an axis
-                    self.ax.imshow(tempHF[imglist[0]]['Im'][()])  #plot data
-                    self.ax.set_title('Original Image')
-                    self.ax.axis("off")
-
-                    self.ax2 = self.figwidget.figure.add_subplot(222) # create an axis
-                    self.ax2.imshow(tempHF[imglist[1]]['Im'][()])  #plot data
-                    self.ax2.set_title('Original Image')
-                    self.ax2.axis("off")
-            
-                    self.ax3 = self.figwidget.figure.add_subplot(223)
-                    self.ax3.imshow(tempHF[imglist[0]]['FFT'][()]) #plot data
-                    self.ax3.set_title('FFT')
-                    self.ax3.axis("off")
-
-            
-                    self.ax4 = self.figwidget.figure.add_subplot(224)
-                    self.ax4.imshow(tempHF[imglist[1]]['FFT'][()])   #plot data
-                    self.ax4.set_title('FFT')
-                    self.ax4.axis("off")                    
-                    
-                    self.figwidget.figure.tight_layout()
-                    self.figwidget.canvas.draw() # refresh canvas
-                elif len(imglist) >= 3:                
-                    self.figwidget.figure.clear() #clear figure
-                    self.ax = self.figwidget.figure.add_subplot(221) # create an axis
-                    self.ax.imshow(tempHF[imglist[0]]['Im'][()])  #plot data
-                    self.ax.set_title('Original Image')
-                    self.ax.axis("off")
-
-                    self.ax2 = self.figwidget.figure.add_subplot(222) # create an axis
-                    self.ax2.imshow(tempHF[imglist[1]]['Im'][()])  #plot data
-                    self.ax2.set_title('Original Image')
-                    self.ax2.axis("off")
-            
-                    self.ax3 = self.figwidget.figure.add_subplot(223)
-                    self.ax3.imshow(tempHF[imglist[0]]['FFT'][()]) #plot data
-                    self.ax3.set_title('FFT')
-                    self.ax3.axis("off")
-
-            
-                    self.ax4 = self.figwidget.figure.add_subplot(224)
-                    self.ax4.imshow(tempHF[imglist[1]]['FFT'][()])   #plot data
-                    self.ax4.set_title('FFT')
-                    self.ax4.axis("off")                    
-                    
-                    self.figwidget.figure.tight_layout()
-                    self.figwidget.canvas.draw() # refresh canvas
+                self.figwidget.canvas.draw() # refresh canvas
                     
             if self.fftw.fftapplied == "True":
                 run()
             else:
-                pass                
+                pass
+              
+    def applyFFTVideo(self):
+        self.fftw = fftWindow()
+        self.fftw.show()
+        self.fftw.exec_()
+        def run():
+            global tempHF
+            imglist = self.ordimglist
+            n = 0
+            tempfft = np.zeros(tempHF[imglist[n]]['Im'].shape)
+            for i in range(0,tempHF[imglist[n]]['Im'].shape[0]):
+                temp_fr = tempHF[imglist[n]]['Im'][i,:,:]
+                rawfftData = np.fft.fft2(temp_fr)
+                shiftedfftData = np.fft.fftshift(rawfftData)
+                absShiftedfftData = np.abs(shiftedfftData)
+                if self.fftw.fftzscaling.currentText() == "None":
+                    plotfftData= absShiftedfftData
+                elif self.fftw.fftzscaling.currentText() == "Log":                    
+                    plotfftData = np.log(absShiftedfftData)
+                elif self.fftw.fftzscaling.currentText() == "Log10":                    
+                    plotfftData = np.log10(absShiftedfftData)
+                tempfft[i,:,:] = plotfftData
+            try:
+                tempHF[imglist[n]]['FFT'] = tempfft
+            except:
+                tempHF[imglist[n]]['FFT'][()] = tempfft
+            tempHF[imglist[n]].attrs['FFTType'] = self.fftw.fftzscaling.currentText()  
+                         
+            self.figwidget.figure.clear() #clear figure
+            self.ax = self.figwidget.figure.add_subplot(121) # create an axis
+            self.ax2 = self.figwidget.figure.add_subplot(122)
+            axsl = self.figwidget.figure.add_axes([0.19,0.06,0.65,0.05])
+            samp = Slider(axsl,'Frame: ', 0, tempHF[imglist[n]]['FFT'][()].shape[0]-1, valinit=0,valstep=1)
+    
+            def slideupdate(val):
+                amp = samp.val
+                ampind = np.int(amp)
+                currentim = tempHF[imglist[n]]['Im'][()][ampind,:,:]
+                currentfft = tempHF[imglist[n]]['FFT'][()][ampind,:,:]
+                self.ax.imshow(currentim)
+                self.ax2.imshow(currentfft)
+                self.figwidget.canvas.draw() # refresh canvas    
+            
+            samp.on_changed(slideupdate)
+    
+            self.ax.imshow(tempHF[imglist[n]]['Im'][()][0,:,:])  #plot data
+            self.ax2.imshow(tempHF[imglist[n]]['FFT'][()][0,:,:])  #plot data            
+            self.ax.axis("off")
+            self.ax2.axis("off")
+            self.figwidget.canvas.draw() # refresh canvas 
 
+                    
+        if self.fftw.fftapplied == "True":
+            run()
+        else:
+            pass                
             
 def chooseFileType(self):
-        #Test function so multiple files can be opened?
-        self.dlg = QFileDialog()
-        filefilters = "Generic Image File (*.tiff *.tif *.png *.jpg *.jpeg);; Hitachi SEM Image (*.tif *.tiff);;JEOL SEM Image (*.tif *.tiff);;FEI Quanta SEM Image (*.tif *.tiff);; Bruker AFM (*.spm);; Gatan (*.dm3 *.dm4);; Thermofischer (*.ser)"
-        fname, filterChoice = self.dlg.getOpenFileName(self, "Select an Image file...",filter=filefilters,options=QFileDialog.DontUseNativeDialog)            
-        #select correct image loading function based on choice from file menu
-        try: del imdata
-        except: pass
-        try: del metadata
-        except: pass
-        try: del simplemdata
-        except: pass
-        if "Hitachi" in filterChoice:
-            try:
-                metafname = fname[0:-3]+'txt'
-                imdata,metadata,simplemdata = HitachiSEMImageLoad(fname,metafname)
-            except:                
-                metafname, _ = self.dlg.getOpenFileName(self, "Select an Image file...",filter="Text File (*.txt)",options=QFileDialog.DontUseNativeDialog)                            
-                imdata,metadata,simplemdata = HitachiSEMImageLoad(fname,metafname)          
-        elif "Quanta" in filterChoice:
+    #Test function so multiple files can be opened?
+    self.dlg = QFileDialog()
+    filefilters = "Generic Image File (*.tiff *.tif *.png *.jpg *.jpeg);; Hitachi SEM Image (*.tif *.tiff);;JEOL SEM Image (*.tif *.tiff);;FEI Quanta SEM Image (*.tif *.tiff);; Bruker AFM (*.spm);; Gatan (*.dm3 *.dm4);; Thermofischer (*.ser)"
+    fname, filterChoice = self.dlg.getOpenFileName(self, "Select an Image file...",filter=filefilters,options=QFileDialog.DontUseNativeDialog)            
+    #select correct image loading function based on choice from file menu
+    try: del imdata, metadata, simplemdata
+    except: pass
+    if "Hitachi" in filterChoice:
+        try:
+            metafname = fname[0:-3]+'txt'
+            imdata,metadata,simplemdata = HitachiSEMImageLoad(fname,metafname)
+        except:                
             metafname, _ = self.dlg.getOpenFileName(self, "Select an Image file...",filter="Text File (*.txt)",options=QFileDialog.DontUseNativeDialog)                            
-            imdata,metadata,simplemdata = QuantaSEMImageLoad(fname,metafname)                
-        elif "JEOL" in filterChoice:
-            try:
-                metafname = fname[0:-3]+'txt' 
-                imdata,metadata,simplemdata = JEOL7900SEMImageLoad(fname,metafname)                
-            except:
-                metafname, _ = self.dlg.getOpenFileName(self, "Select an Image file...",filter="Text File (*.txt)",options=QFileDialog.DontUseNativeDialog)                            
-                imdata,metadata,simplemdata = JEOL7900SEMImageLoad(fname,metafname)
-        elif "Generic Image" in filterChoice:
-            imdata,metadata,simplemdata = GenericImageOpenTIFF(fname)
-        elif "Bruker" in filterChoice:
-            imdata,metadata,simplemdata = BrukerAFMImageLoad(fname)
-        elif "Gatan" in filterChoice:
-            imdata,metadata,simplemdata = dmImageLoad(fname)
-        elif "Thermofischer" in filterChoice:
-            imdata,metadata,simplemdata = SERImageLoad(fname)            
-        self.logwidget.textw.append(f"Opened file: {fname} \n")                      
-        self.logwidget.textw.append(f"File Type Selected: {filterChoice} \n")                 
-        return fname, filterChoice, imdata, metadata, simplemdata
+            imdata,metadata,simplemdata = HitachiSEMImageLoad(fname,metafname)          
+    elif "Quanta" in filterChoice:
+        metafname, _ = self.dlg.getOpenFileName(self, "Select an Image file...",filter="Text File (*.txt)",options=QFileDialog.DontUseNativeDialog)                            
+        imdata,metadata,simplemdata = QuantaSEMImageLoad(fname,metafname)                
+    elif "JEOL" in filterChoice:
+        try:
+            metafname = fname[0:-3]+'txt' 
+            imdata,metadata,simplemdata = JEOL7900SEMImageLoad(fname,metafname)                
+        except:
+            metafname, _ = self.dlg.getOpenFileName(self, "Select an Image file...",filter="Text File (*.txt)",options=QFileDialog.DontUseNativeDialog)                            
+            imdata,metadata,simplemdata = JEOL7900SEMImageLoad(fname,metafname)
+    elif "Generic Image" in filterChoice:
+        imdata,metadata,simplemdata = GenericImageOpenTIFF(fname)
+    elif "Bruker" in filterChoice:
+        imdata,metadata,simplemdata = BrukerAFMImageLoad(fname)
+    elif "Gatan" in filterChoice:
+        imdata,metadata,simplemdata = dmImageLoad(fname)
+    elif "Thermofischer" in filterChoice:
+        imdata,metadata,simplemdata = SERImageLoad(fname) 
+    self.logwidget.textw.append(f"Opened file: {fname} \n")                      
+    self.logwidget.textw.append(f"File Type Selected: {filterChoice} \n")                 
+    return fname, filterChoice, imdata, metadata, simplemdata
+
+def chooseVideoType(self):
+    #Test function so multiple files can be opened?
+    self.dlg = QFileDialog()
+    filefilters = f"Generic AVI (*.avi);; Quanta AVI (*.avi);; Gatan (*.dm3 *.dm4);; Thermofischer (*.ser)"
+    fname, filterChoice = self.dlg.getOpenFileName(self, "Select an Image file...",filter=filefilters,options=QFileDialog.DontUseNativeDialog)            
+    #select correct image loading function based on choice from file menu
+    try: del imdata, metadata, simplemdata
+    except: pass
+    if "AVI" in filterChoice:
+        if "Generic" in filterChoice:                          
+            imdata,metadata,simplemdata = AVIreader(fname,"Generic")
+        elif "Quanta" in filterChoice:
+            imdata,metadata,simplemdata = AVIreader(fname,"Quanta")                
+    elif "Gatan" in filterChoice:
+        imdata,metadata,simplemdata = dmImageLoad(fname)
+    elif "Thermofischer" in filterChoice:
+        imdata,metadata,simplemdata = SERImageLoad(fname) 
+    self.logwidget.textw.append(f"Opened file: {fname} \n")                      
+    self.logwidget.textw.append(f"File Type Selected: {filterChoice} \n")                 
+    return fname, filterChoice, imdata, metadata, simplemdata
+
         
 def clearAllFilters(self):
     def run():
