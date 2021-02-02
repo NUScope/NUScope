@@ -170,9 +170,9 @@ def BrukerAFMImageLoad(filename):
     simple_meta_data = {}    
     meta_data ={}
     for item in mdata.items():
-        print(item)
+        #print(item)
         tempValue = item[1][0].decode('UTF-8')
-        print(tempValue)
+        #print(tempValue)
         meta_data[item[0].decode('UTF-8')]=tempValue   
     try:
         scan_data = scan.get_channel()
@@ -183,28 +183,6 @@ def BrukerAFMImageLoad(filename):
     #simple_meta_data['Conversion Factor (m per px)'] = meta_data['Scan Size']
         
     return scan_data.pixels, meta_data, simple_meta_data
-
-def dmImageLoad_PreVideo(filename):
-    '''
-    This should work for any Digital Micrograph file (dm3,dm4) that is an image.
-    3D Datasets will only show 1st image in series (time series, etc).
-    Assumes that x & y pixel size are equal. 
-    '''
-    from ncempy.io import dm
-
-    data = dm.dmReader(filename)
-
-    image_data = data['data']
-    meta_data = {} 
-    [data.pop(k) for k in ['data','coords']]
-    pxSize = data['pixelSize'][1] 
-    for k,v in data.items():
-        meta_data[k] = str(v)
-    simple_meta_data = meta_data
-    simple_meta_data['Conversion Factor (m per px)'] =str(float(pxSize)*1e-9)        
-    if len(image_data.shape) > 2: #if dataset is 3D, return 1st image
-        image_data = image_data[0,:,:]
-    return image_data, meta_data, simple_meta_data
 
 def dmImageLoad(filename):
     '''
@@ -222,11 +200,36 @@ def dmImageLoad(filename):
     pxSize = data['pixelSize'][1] 
     for k,v in data.items():
         meta_data[k] = str(v)
+    meta_data['Size'] = str(image_data.shape)        
     simple_meta_data = meta_data
     simple_meta_data['Conversion Factor (m per px)'] =str(float(pxSize)*1e-9)        
     if len(image_data.shape) > 2: #if dataset is 3D, return 1st image
+        image_data = image_data[0,:,:]
+    return image_data, meta_data, simple_meta_data
+
+def dm3DLoad(filename):
+    '''
+    This should work for any Digital Micrograph file (dm3,dm4) that is an image.
+    3D Datasets will only show 1st image in series (time series, etc).
+    Assumes that x & y pixel size are equal. 
+    '''
+    from ncempy.io import dm
+
+    data = dm.dmReader(filename)
+
+    image_data = data['data']
+    meta_data = {} 
+    [data.pop(k) for k in ['data','coords']]
+    pxSize = data['pixelSize'][1] 
+    for k,v in data.items():
+        meta_data[k] = str(v)
+    meta_data['Size'] = str(image_data.shape)      
+    simple_meta_data = meta_data
+    simple_meta_data['Conversion Factor (m per px)'] =str(float(pxSize)*1e-9)        
+    if len(image_data.shape) > 2: 
         image_data = image_data
     return image_data, meta_data, simple_meta_data
+
 def SERImageLoad(filename):
     '''
     ????
@@ -241,12 +244,93 @@ def SERImageLoad(filename):
     pxSize = data['pixelSize'][1] 
     for k,v in data.items():
         meta_data[k] = str(v)
+    meta_data['Size'] = str(image_data.shape)      
     simple_meta_data = meta_data
     simple_meta_data['Conversion Factor (m per px)'] =str(float(pxSize))        
     if len(image_data.shape) > 2: #if dataset is 3D, return 1st image
         image_data = image_data[0,:,:]
     return image_data, meta_data, simple_meta_data
 
+def SER3DLoad(filename):
+    '''
+    Assumed to work the same way as dm files. Needs to be tested.
+    '''
+    from ncempy.io import ser
+    
+    data = ser.serReader(filename)
+    
+    image_data = data['data']
+    meta_data = {} 
+    data.pop('data')
+    pxSize = data['pixelSize'][1] 
+    for k,v in data.items():
+        meta_data[k] = str(v)
+    meta_data['Size'] = str(image_data.shape)
+    simple_meta_data = meta_data
+    simple_meta_data['Conversion Factor (m per px)'] =str(float(pxSize))        
+    return image_data, meta_data, simple_meta_data
+
+
+def AVIreader(filename, ftype):
+    '''
+    Function open and convert AVI file into a series of numpy arrays. 
+    - TF Quanta (Status: Good)
+    - Hitachi (Status: TBD)
+    - JEOL (Status: TBD)
+    - Nikon optical microscope (Status: TBD)
+    '''
+    import cv2 
+    import skimage.color
+    
+    if ftype == 'Quanta':
+        cap = cv2.VideoCapture(filename)
+        frameCount = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+        frameWidth = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+        frameHeight = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+    
+        buf = np.empty((frameCount, frameHeight, frameWidth,3), np.dtype('uint8'))
+        fc = 0
+        ret = True
+        fcfinal = frameCount
+        cap.read()
+        while (fc < frameCount  and ret):
+            try:
+                ret, buf[fc] = cap.read()
+            except TypeError:
+                fcfinal = fc-1
+                break
+            fc += 1
+        cap.release()
+        vidata = buf[0:fcfinal+1,:,:,:]
+        vidata = skimage.color.rgb2gray(vidata)
+        meta_data = {"Image Size": str(vidata.shape)}
+        simple_meta_data = meta_data
+        return vidata, meta_data, simple_meta_data
+    elif ftype == "Generic":
+        cap = cv2.VideoCapture(filename)
+        frameCount = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+        frameWidth = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+        frameHeight = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+    
+        buf = np.empty((frameCount, frameHeight, frameWidth,3), np.dtype('uint8'))
+        fc = 0
+        ret = True
+        fcfinal = frameCount
+        print(frameCount,frameWidth,frameHeight)
+        cap.read()
+        while (fc < frameCount  and ret):
+            try:
+                ret, buf[fc] = cap.read()
+            except TypeError:
+                print('TypeError')
+                fcfinal = fc-1
+                break
+            fc += 1
+        cap.release()
+        vidata = skimage.color.rgb2gray(vidata)
+        meta_data = {"Image Size": str(vidata.shape)}
+        simple_meta_data = meta_data
+        return vidata, meta_data, simple_meta_data
 
 def main():
     '''
@@ -270,6 +354,9 @@ def main():
     j7900_idata,j7900_mdata,j7900_simple_mdata = JEOL7900SEMImageLoad(j7900_fn, j7900_mfn)
     bruker_idata,bruker_mdata,bruker_simple_mdata = BrukerAFMImageLoad(bruker_fn)
     dm3_idata,dm3_mdata,dm3_simple_mdata = dmImageLoad(gatan_fn)
+    dm3_idata,dm3_mdata,dm3_simple_mdata = dm3DLoad(gatan_fn)
+    print(dm3_simple_mdata)
+    print(dm3_mdata)    
     #print(bruker_mdata)
     
     
